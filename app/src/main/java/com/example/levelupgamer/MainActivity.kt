@@ -15,7 +15,6 @@ class MainActivity : ComponentActivity() {
         setContent {
             LevelUPGamerTheme {
                 Surface(color = MaterialTheme.colorScheme.background) {
-                    val navController = rememberNavController()
                     AppNavigation()
                 }
             }

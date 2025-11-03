@@ -6,17 +6,20 @@ import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.text.font.FontFamily
 import androidx.compose.ui.text.input.PasswordVisualTransformation
+import androidx.compose.ui.text.font.FontFamily
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavController
+import com.example.levelupgamer.viewmodel.UserViewModel
 
 @Composable
-fun RegisterScreen(navController: NavController) {
+fun RegisterScreen(navController: NavController, userViewModel: UserViewModel) {
 
-    var name by remember { mutableStateOf("") }
-    var email by remember { mutableStateOf("") }
-    var password by remember { mutableStateOf("") }
+    var nombre by remember { mutableStateOf("") }
+    var correo by remember { mutableStateOf("") }
+    var contrasena by remember { mutableStateOf("") }
+    var anioNacimiento by remember { mutableStateOf("") }
+    var error by remember { mutableStateOf<String?>(null) }
 
     Column(
         modifier = Modifier
@@ -24,59 +27,82 @@ fun RegisterScreen(navController: NavController) {
             .background(Color.Black)
             .padding(16.dp)
     ) {
-
         Text(
             "Crear cuenta",
-            style = MaterialTheme.typography.titleLarge,
-            color = Color(0xFF39FF14),
-            fontFamily = FontFamily.Default
+            style = MaterialTheme.typography.titleLarge.copy(color = Color(0xFF39FF14), fontFamily = FontFamily.Default)
         )
 
         Spacer(modifier = Modifier.height(24.dp))
 
         OutlinedTextField(
-            value = name,
-            onValueChange = { name = it },
+            value = nombre,
+            onValueChange = { nombre = it },
             label = { Text("Nombre", color = Color(0xFF39FF14), fontFamily = FontFamily.Default) },
             textStyle = LocalTextStyle.current.copy(color = Color(0xFF39FF14), fontFamily = FontFamily.Default),
             modifier = Modifier.fillMaxWidth()
         )
 
-        OutlinedTextField(
-            value = email,
-            onValueChange = { email = it },
-            label = { Text("Correo", color = Color(0xFF39FF14), fontFamily = FontFamily.Default) },
-            textStyle = LocalTextStyle.current.copy(color = Color(0xFF39FF14), fontFamily = FontFamily.Default),
-            modifier = Modifier
-                .fillMaxWidth()
-                .padding(top = 16.dp)
-        )
+        Spacer(modifier = Modifier.height(16.dp))
 
         OutlinedTextField(
-            value = password,
-            onValueChange = { password = it },
+            value = correo,
+            onValueChange = { correo = it },
+            label = { Text("Correo", color = Color(0xFF39FF14), fontFamily = FontFamily.Default) },
+            textStyle = LocalTextStyle.current.copy(color = Color(0xFF39FF14), fontFamily = FontFamily.Default),
+            modifier = Modifier.fillMaxWidth()
+        )
+
+        Spacer(modifier = Modifier.height(16.dp))
+
+        OutlinedTextField(
+            value = contrasena,
+            onValueChange = { contrasena = it },
             label = { Text("Contraseña", color = Color(0xFF39FF14), fontFamily = FontFamily.Default) },
             textStyle = LocalTextStyle.current.copy(color = Color(0xFF39FF14), fontFamily = FontFamily.Default),
             visualTransformation = PasswordVisualTransformation(),
-            modifier = Modifier
-                .fillMaxWidth()
-                .padding(top = 16.dp)
+            modifier = Modifier.fillMaxWidth()
         )
 
-        Spacer(modifier = Modifier.height(32.dp))
+        Spacer(modifier = Modifier.height(16.dp))
+
+        OutlinedTextField(
+            value = anioNacimiento,
+            onValueChange = { anioNacimiento = it },
+            label = { Text("Año de nacimiento", color = Color(0xFF39FF14), fontFamily = FontFamily.Default) },
+            textStyle = LocalTextStyle.current.copy(color = Color(0xFF39FF14), fontFamily = FontFamily.Default),
+            modifier = Modifier.fillMaxWidth()
+        )
+
+        error?.let {
+            Text(it, color = MaterialTheme.colorScheme.error, modifier = Modifier.padding(top = 8.dp))
+        }
+
+        Spacer(modifier = Modifier.height(24.dp))
 
         Button(
-            onClick = { navController.navigate("login") },
+            onClick = {
+                val correoValido = correo.endsWith("@duocuc.cl") || correo.endsWith("@gmail.com")
+                val anioValido = anioNacimiento.toIntOrNull()?.let { it <= 2005 } ?: false
+
+                error = when {
+                    nombre.isBlank() || correo.isBlank() || contrasena.isBlank() || anioNacimiento.isBlank() ->
+                        "Todos los campos son obligatorios"
+                    !correoValido -> "El correo debe terminar en @duocuc.cl o @gmail.com"
+                    !anioValido -> "Debes ser mayor de 18 años"
+                    else -> null
+                }
+
+                if (error == null) {
+                    userViewModel.register(nombre, correo, contrasena, anioNacimiento.toInt()) { success, message ->
+                        if (success) navController.navigate("login")
+                        else error = message
+                    }
+                }
+            },
             modifier = Modifier.fillMaxWidth(),
-            colors = ButtonDefaults.buttonColors(
-                containerColor = Color(0xFF39FF14),
-                contentColor = Color.Black
-            )
+            colors = ButtonDefaults.buttonColors(containerColor = Color(0xFF39FF14), contentColor = Color.Black)
         ) {
-            Text(
-                "Registrar",
-                fontFamily = FontFamily.Default
-            )
+            Text("Registrar", color = Color.Black)
         }
     }
 }
