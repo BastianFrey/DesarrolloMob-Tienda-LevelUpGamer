@@ -1,6 +1,5 @@
 package com.example.levelupgamer.ui.screens
 
-import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.RowScope
 import androidx.compose.foundation.layout.Spacer
@@ -17,6 +16,7 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.font.FontFamily
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavController
+import com.example.levelupgamer.ui.theme.PurpleGrey40
 import kotlinx.coroutines.launch
 
 @OptIn(ExperimentalMaterial3Api::class)
@@ -35,8 +35,8 @@ fun MainLayout(
         drawerContent = {
             ModalDrawerSheet(
                 modifier = Modifier
-                    .width(220.dp)
-                    .background(Color.Black)
+                    .width(220.dp),
+                drawerContainerColor = PurpleGrey40
             ) {
                 Spacer(modifier = Modifier.height(24.dp))
 
@@ -76,6 +76,16 @@ fun MainLayout(
                     selected = false,
                     onClick = {
                         navController.navigate("miCuenta")
+                        scope.launch { drawerState.close() }
+                    },
+                    modifier = Modifier.padding(NavigationDrawerItemDefaults.ItemPadding)
+                )
+
+                NavigationDrawerItem(
+                    label = { Text("Escanear QR", color = Color(0xFF39FF14), fontFamily = FontFamily.Default) },
+                    selected = false,
+                    onClick = {
+                        navController.navigate("scanner")
                         scope.launch { drawerState.close() }
                     },
                     modifier = Modifier.padding(NavigationDrawerItemDefaults.ItemPadding)

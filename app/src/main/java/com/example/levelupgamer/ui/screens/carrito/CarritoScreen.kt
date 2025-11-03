@@ -21,6 +21,7 @@ import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavController
 import com.example.levelupgamer.viewmodel.CarritoViewModel
 import com.example.levelupgamer.viewmodel.UserViewModel
+import kotlinx.coroutines.launch
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -29,12 +30,15 @@ fun CarritoScreen(navController: NavController, userViewModel: UserViewModel) {
     val productosCarrito by carritoViewModel.productosCarrito.collectAsState()
     val totalCarrito by carritoViewModel.totalCarrito.collectAsState()
     val currentUser by userViewModel.currentUser.collectAsState()
+    val snackbarHostState = remember { SnackbarHostState() }
+    val scope = rememberCoroutineScope()
 
     val tieneDescuento = currentUser?.correo?.endsWith("@duocuc.cl") == true
     val totalConDescuento = if (tieneDescuento) totalCarrito * 0.8 else totalCarrito
 
     Scaffold(
         modifier = Modifier.background(Color.Black),
+        snackbarHost = { SnackbarHost(snackbarHostState) },
         topBar = {
             TopAppBar(
                 title = {
@@ -96,7 +100,10 @@ fun CarritoScreen(navController: NavController, userViewModel: UserViewModel) {
                         Spacer(modifier = Modifier.height(16.dp))
                         Button(
                             onClick = {
-
+                                scope.launch {
+                                    snackbarHostState.showSnackbar("¡Compra finalizada con éxito!")
+                                }
+                                carritoViewModel.limpiarCarrito()
                             },
                             modifier = Modifier.fillMaxWidth(),
                             colors = ButtonDefaults.buttonColors(

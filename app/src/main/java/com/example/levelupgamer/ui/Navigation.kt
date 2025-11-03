@@ -17,7 +17,9 @@ import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
 import androidx.navigation.navArgument
+import androidx.navigation.navDeepLink
 import com.example.levelupgamer.ui.screens.MainLayout
+import com.example.levelupgamer.ui.screens.ScannerScreen
 import com.example.levelupgamer.ui.screens.carrito.CarritoScreen
 import com.example.levelupgamer.ui.screens.cuenta.MiCuentaScreen
 import com.example.levelupgamer.ui.screens.home.HomeScreen
@@ -44,7 +46,10 @@ fun AppNavigation() {
         composable("login") { LoginScreen(navController, userViewModel) }
         composable("register") { RegisterScreen(navController, userViewModel) }
 
-        composable("home") { MainLayout(navController = navController, title = "Bienvenido") { HomeScreen(navController, userViewModel) } }
+        composable(
+            "home",
+            deepLinks = listOf(navDeepLink { uriPattern = "levelupgamer://inicio" })
+        ) { MainLayout(navController = navController, title = "Bienvenido") { HomeScreen(navController, userViewModel) } }
         composable("productos") {
             MainLayout(
                 navController = navController,
@@ -68,6 +73,7 @@ fun AppNavigation() {
         composable("contacto") { MainLayout(navController = navController, title = "Contacto") { ContactoScreen(navController) } }
         composable("miCuenta") { MainLayout(navController = navController, title = "Mi Cuenta") { MiCuentaScreen(navController, userViewModel) } }
         composable("carrito") { MainLayout(navController = navController, title = "Carrito") { CarritoScreen(navController, userViewModel) } }
+        composable("scanner") { MainLayout(navController = navController, title = "Escanear QR") { ScannerScreen() } }
 
         composable(
             route = "productoDetalle/{id}",
