@@ -81,13 +81,13 @@ fun RegisterScreen(navController: NavController, userViewModel: UserViewModel) {
 
         Button(
             onClick = {
-                val correoValido = correo.endsWith("@duocuc.cl") || correo.endsWith("@gmail.com")
+                val correoValido = correo.endsWith("@duocuc.cl") || correo.endsWith("@gmail.com") || correo.endsWith("@admin.cl")
                 val anioValido = anioNacimiento.toIntOrNull()?.let { it <= 2005 } ?: false
 
                 error = when {
                     nombre.isBlank() || correo.isBlank() || contrasena.isBlank() || anioNacimiento.isBlank() ->
                         "Todos los campos son obligatorios"
-                    !correoValido -> "El correo debe terminar en @duocuc.cl o @gmail.com"
+                    !correoValido -> "El correo debe terminar en @duocuc.cl, @gmail.com o @admin.cl"
                     !anioValido -> "Debes ser mayor de 18 años"
                     else -> null
                 }

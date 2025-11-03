@@ -20,13 +20,18 @@ import androidx.compose.ui.unit.dp
 import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavController
 import com.example.levelupgamer.viewmodel.CarritoViewModel
+import com.example.levelupgamer.viewmodel.UserViewModel
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun CarritoScreen(navController: NavController) {
+fun CarritoScreen(navController: NavController, userViewModel: UserViewModel) {
     val carritoViewModel: CarritoViewModel = viewModel()
     val productosCarrito by carritoViewModel.productosCarrito.collectAsState()
     val totalCarrito by carritoViewModel.totalCarrito.collectAsState()
+    val currentUser by userViewModel.currentUser.collectAsState()
+
+    val tieneDescuento = currentUser?.correo?.endsWith("@duocuc.cl") == true
+    val totalConDescuento = if (tieneDescuento) totalCarrito * 0.8 else totalCarrito
 
     Scaffold(
         modifier = Modifier.background(Color.Black),
@@ -63,6 +68,14 @@ fun CarritoScreen(navController: NavController) {
                     shape = MaterialTheme.shapes.medium
                 ) {
                     Column(modifier = Modifier.padding(16.dp)) {
+                        if (tieneDescuento) {
+                            Text(
+                                "¡Descuento del 20% aplicado!",
+                                color = Color(0xFF39FF14),
+                                fontWeight = FontWeight.Bold,
+                                modifier = Modifier.padding(bottom = 8.dp)
+                            )
+                        }
                         Row(
                             modifier = Modifier.fillMaxWidth(),
                             horizontalArrangement = Arrangement.SpaceBetween
@@ -74,7 +87,7 @@ fun CarritoScreen(navController: NavController) {
                                 fontWeight = FontWeight.Bold
                             )
                             Text(
-                                "$${String.format("%.2f", totalCarrito)}",
+                                "$${String.format("%.2f", totalConDescuento)}",
                                 style = MaterialTheme.typography.titleMedium,
                                 color = Color(0xFF39FF14),
                                 fontWeight = FontWeight.Bold
@@ -108,7 +121,6 @@ fun CarritoScreen(navController: NavController) {
         }
     ) { innerPadding ->
         if (productosCarrito.isEmpty()) {
-            // Carrito vacío
             Column(
                 modifier = Modifier
                     .fillMaxSize()
@@ -138,7 +150,6 @@ fun CarritoScreen(navController: NavController) {
                 )
             }
         } else {
-            // Lista de productos en el carrito
             LazyColumn(
                 modifier = Modifier
                     .fillMaxSize()
@@ -188,7 +199,6 @@ fun CarritoScreen(navController: NavController) {
                                 )
                             }
 
-                            // Controles de cantidad
                             Column(
                                 horizontalAlignment = Alignment.CenterHorizontally
                             ) {
