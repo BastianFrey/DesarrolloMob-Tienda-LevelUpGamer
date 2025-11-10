@@ -32,7 +32,7 @@ class ProductoViewModel(application: Application) : AndroidViewModel(application
             val examen = listOf(
                 Producto(
                     nombre = "Catan",
-                    descripcion = "JM001 • Juegos de Mesa • Catan",
+                    descripcion = "Un clásico juego de estrategia donde los jugadores compiten por colonizar y\\n",
                     precio = 29990.0
                 ),
                 Producto(
