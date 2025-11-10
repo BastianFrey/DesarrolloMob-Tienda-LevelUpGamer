@@ -11,9 +11,7 @@ import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.scale
-import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.painterResource
-import androidx.compose.ui.text.font.FontFamily
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavController
@@ -21,11 +19,14 @@ import com.example.levelupgamer.R
 import com.example.levelupgamer.viewmodel.UserViewModel
 
 @Composable
-fun HomeScreen(navController: NavController, userViewModel: UserViewModel) {
+fun HomeScreen(
+    navController: NavController,
+    userViewModel: UserViewModel
+) {
     Column(
         modifier = Modifier
             .fillMaxSize()
-            .background(Color.Black)
+            .background(MaterialTheme.colorScheme.background)
             .padding(16.dp),
         horizontalAlignment = Alignment.CenterHorizontally,
         verticalArrangement = Arrangement.Top
@@ -33,9 +34,8 @@ fun HomeScreen(navController: NavController, userViewModel: UserViewModel) {
         Spacer(modifier = Modifier.height(32.dp))
 
         Text(
-            "¡Bienvenido a LevelUpGamer!",
-            color = Color(0xFF39FF14),
-            fontFamily = FontFamily.Default,
+            text = "¡Bienvenido a LevelUpGamer!",
+            color = MaterialTheme.colorScheme.secondary,
             style = MaterialTheme.typography.headlineMedium,
             textAlign = TextAlign.Center,
             modifier = Modifier.fillMaxWidth()
@@ -48,7 +48,7 @@ fun HomeScreen(navController: NavController, userViewModel: UserViewModel) {
             initialValue = 1f,
             targetValue = 1.14f,
             animationSpec = infiniteRepeatable(
-                animation = tween(1200, easing = FastOutSlowInEasing),
+                animation = tween(durationMillis = 1200, easing = FastOutSlowInEasing),
                 repeatMode = RepeatMode.Reverse
             )
         )
