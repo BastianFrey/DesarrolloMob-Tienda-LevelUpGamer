@@ -6,7 +6,6 @@ import androidx.lifecycle.viewModelScope
 import androidx.room.Room
 import com.example.levelupgamer.data.ProductoDatabase
 import com.example.levelupgamer.data.model.Producto
-import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
@@ -83,7 +82,6 @@ class ProductoViewModel(application: Application) : AndroidViewModel(application
                 )
             )
 
-            // 3. por cada uno del examen, si no está por nombre, lo insertamos
             val nombresActuales = actuales.map { it.nombre }.toSet()
             examen.forEach { prod ->
                 if (prod.nombre !in nombresActuales) {
