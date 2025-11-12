@@ -14,6 +14,10 @@ import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.platform.LocalContext
+import android.content.Intent
+import android.net.Uri
+import android.widget.Toast
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
@@ -25,6 +29,7 @@ import androidx.navigation.NavController
 @Composable
 fun ContactoScreen(navController: NavController) {
     val colorScheme = MaterialTheme.colorScheme
+    val context = LocalContext.current
 
     Scaffold(
         modifier = Modifier.background(colorScheme.background),
@@ -78,7 +83,7 @@ fun ContactoScreen(navController: NavController) {
                 modifier = Modifier.padding(bottom = 32.dp)
             )
 
-
+            // Información de Contacto
             Card(
                 modifier = Modifier
                     .fillMaxWidth()
@@ -127,6 +132,7 @@ fun ContactoScreen(navController: NavController) {
             }
 
 
+            // Horarios
             Card(
                 modifier = Modifier
                     .fillMaxWidth()
@@ -162,6 +168,7 @@ fun ContactoScreen(navController: NavController) {
             }
 
 
+            // Servicios Disponibles
             Card(
                 modifier = Modifier
                     .fillMaxWidth()
@@ -202,6 +209,7 @@ fun ContactoScreen(navController: NavController) {
             }
 
 
+            // Contacto Rápido
             Card(
                 modifier = Modifier
                     .fillMaxWidth()
@@ -231,7 +239,23 @@ fun ContactoScreen(navController: NavController) {
                     )
 
                     Button(
-                        onClick = { /* Acción */ },
+                        onClick = {
+                            val phoneNumber = "+56987654321" // Número de soporte
+                            val message = "Hola, necesito soporte técnico de LevelUpGamer."
+                            val encodedMessage = Uri.encode(message)
+                            val intent = Intent(Intent.ACTION_VIEW)
+                            intent.data = Uri.parse("https://api.whatsapp.com/send?phone=$phoneNumber&text=$encodedMessage")
+
+                            if (intent.resolveActivity(context.packageManager) != null) {
+                                context.startActivity(intent)
+                            } else {
+                                Toast.makeText(
+                                    context,
+                                    "La aplicación de WhatsApp no está instalada.",
+                                    Toast.LENGTH_LONG
+                                ).show()
+                            }
+                        },
                         modifier = Modifier.fillMaxWidth(),
                         colors = ButtonDefaults.buttonColors(
                             containerColor = colorScheme.secondary,
