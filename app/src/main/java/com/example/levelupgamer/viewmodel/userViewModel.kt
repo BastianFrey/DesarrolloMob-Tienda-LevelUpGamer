@@ -3,8 +3,8 @@ package com.example.levelupgamer.viewmodel
 import android.app.Application
 import androidx.lifecycle.AndroidViewModel
 import androidx.lifecycle.viewModelScope
-import com.example.levelupgamer.data.AppDatabase
-import com.example.levelupgamer.data.User
+import com.example.levelupgamer.data.database.AppDatabase
+import com.example.levelupgamer.data.model.User
 import com.example.levelupgamer.data.repository.UserRepository
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow

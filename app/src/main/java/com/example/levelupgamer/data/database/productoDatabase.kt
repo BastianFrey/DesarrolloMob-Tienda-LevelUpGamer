@@ -1,4 +1,4 @@
-package com.example.levelupgamer.data
+package com.example.levelupgamer.data.database
 
 import androidx.room.Database
 import androidx.room.RoomDatabase

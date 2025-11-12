@@ -1,7 +1,7 @@
 package com.example.levelupgamer.data.dao
 
 import androidx.room.*
-import com.example.levelupgamer.data.User
+import com.example.levelupgamer.data.model.User
 @Dao
 interface UserDao {
 
