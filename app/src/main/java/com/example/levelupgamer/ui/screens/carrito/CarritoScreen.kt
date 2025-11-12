@@ -13,7 +13,6 @@ import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.font.FontFamily
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
@@ -26,6 +25,8 @@ import kotlinx.coroutines.launch
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun CarritoScreen(navController: NavController, userViewModel: UserViewModel) {
+    val colorScheme = MaterialTheme.colorScheme
+
     val carritoViewModel: CarritoViewModel = viewModel()
     val productosCarrito by carritoViewModel.productosCarrito.collectAsState()
     val totalCarrito by carritoViewModel.totalCarrito.collectAsState()
@@ -37,14 +38,14 @@ fun CarritoScreen(navController: NavController, userViewModel: UserViewModel) {
     val totalConDescuento = if (tieneDescuento) totalCarrito * 0.8 else totalCarrito
 
     Scaffold(
-        modifier = Modifier.background(Color.Black),
+        modifier = Modifier.background(colorScheme.background),
         snackbarHost = { SnackbarHost(snackbarHostState) },
         topBar = {
             TopAppBar(
                 title = {
                     Text(
                         "Mi Carrito",
-                        color = Color(0xFF39FF14),
+                        color = colorScheme.secondary,
                         fontFamily = FontFamily.Default
                     )
                 },
@@ -53,12 +54,12 @@ fun CarritoScreen(navController: NavController, userViewModel: UserViewModel) {
                         Icon(
                             Icons.Default.ArrowBack,
                             contentDescription = "Regresar",
-                            tint = Color(0xFF39FF14)
+                            tint = colorScheme.secondary
                         )
                     }
                 },
                 colors = TopAppBarDefaults.topAppBarColors(
-                    containerColor = Color.Black
+                    containerColor = colorScheme.background
                 )
             )
         },
@@ -68,14 +69,14 @@ fun CarritoScreen(navController: NavController, userViewModel: UserViewModel) {
                     modifier = Modifier
                         .fillMaxWidth()
                         .padding(16.dp),
-                    color = Color.DarkGray,
+                    color = colorScheme.surface,
                     shape = MaterialTheme.shapes.medium
                 ) {
                     Column(modifier = Modifier.padding(16.dp)) {
                         if (tieneDescuento) {
                             Text(
                                 "¡Descuento del 20% aplicado!",
-                                color = Color(0xFF39FF14),
+                                color = colorScheme.secondary,
                                 fontWeight = FontWeight.Bold,
                                 modifier = Modifier.padding(bottom = 8.dp)
                             )
@@ -87,13 +88,13 @@ fun CarritoScreen(navController: NavController, userViewModel: UserViewModel) {
                             Text(
                                 "Total:",
                                 style = MaterialTheme.typography.titleMedium,
-                                color = Color(0xFF39FF14),
+                                color = colorScheme.secondary,
                                 fontWeight = FontWeight.Bold
                             )
                             Text(
                                 "$${String.format("%.2f", totalConDescuento)}",
                                 style = MaterialTheme.typography.titleMedium,
-                                color = Color(0xFF39FF14),
+                                color = colorScheme.secondary,
                                 fontWeight = FontWeight.Bold
                             )
                         }
@@ -107,8 +108,8 @@ fun CarritoScreen(navController: NavController, userViewModel: UserViewModel) {
                             },
                             modifier = Modifier.fillMaxWidth(),
                             colors = ButtonDefaults.buttonColors(
-                                containerColor = Color(0xFF39FF14),
-                                contentColor = Color.Black
+                                containerColor = colorScheme.secondary,
+                                contentColor = colorScheme.onSecondary
                             )
                         ) {
                             Text("Finalizar Compra", fontWeight = FontWeight.Bold)
@@ -119,7 +120,7 @@ fun CarritoScreen(navController: NavController, userViewModel: UserViewModel) {
                         ) {
                             Text(
                                 "Limpiar Carrito",
-                                color = Color(0xFF1E90FF)
+                                color = colorScheme.primary
                             )
                         }
                     }
@@ -132,7 +133,7 @@ fun CarritoScreen(navController: NavController, userViewModel: UserViewModel) {
                 modifier = Modifier
                     .fillMaxSize()
                     .padding(innerPadding)
-                    .background(Color.Black)
+                    .background(colorScheme.background)
                     .padding(16.dp),
                 horizontalAlignment = Alignment.CenterHorizontally,
                 verticalArrangement = Arrangement.Center
@@ -140,20 +141,20 @@ fun CarritoScreen(navController: NavController, userViewModel: UserViewModel) {
                 Icon(
                     Icons.Default.ShoppingCart,
                     contentDescription = "Carrito vacío",
-                    tint = Color(0xFF39FF14),
+                    tint = colorScheme.secondary,
                     modifier = Modifier.size(64.dp)
                 )
                 Spacer(modifier = Modifier.height(16.dp))
                 Text(
                     "Tu carrito está vacío",
                     style = MaterialTheme.typography.titleMedium,
-                    color = Color(0xFF39FF14)
+                    color = colorScheme.secondary
                 )
                 Spacer(modifier = Modifier.height(8.dp))
                 Text(
                     "Agrega algunos productos desde la lista",
                     style = MaterialTheme.typography.bodyMedium,
-                    color = Color(0xFFD3D3D3)
+                    color = colorScheme.onSurface
                 )
             }
         } else {
@@ -161,7 +162,7 @@ fun CarritoScreen(navController: NavController, userViewModel: UserViewModel) {
                 modifier = Modifier
                     .fillMaxSize()
                     .padding(innerPadding)
-                    .background(Color.Black)
+                    .background(colorScheme.background)
                     .padding(16.dp)
             ) {
                 items(productosCarrito) { carritoItem ->
@@ -169,7 +170,10 @@ fun CarritoScreen(navController: NavController, userViewModel: UserViewModel) {
                         modifier = Modifier
                             .fillMaxWidth()
                             .padding(vertical = 4.dp),
-                        colors = CardDefaults.cardColors(containerColor = Color.DarkGray)
+                        colors = CardDefaults.cardColors(
+
+                            containerColor = colorScheme.surface
+                        )
                     ) {
                         Row(
                             modifier = Modifier.padding(12.dp),
@@ -181,28 +185,28 @@ fun CarritoScreen(navController: NavController, userViewModel: UserViewModel) {
                                 Text(
                                     carritoItem.nombre,
                                     style = MaterialTheme.typography.titleMedium,
-                                    color = Color(0xFF39FF14),
+                                    color = colorScheme.secondary,
                                     fontFamily = FontFamily.Default
                                 )
                                 Spacer(modifier = Modifier.height(4.dp))
                                 Text(
                                     carritoItem.descripcion,
                                     style = MaterialTheme.typography.bodyMedium,
-                                    color = Color(0xFFD3D3D3),
+                                    color = colorScheme.onSurface,
                                     fontFamily = FontFamily.Default
                                 )
                                 Spacer(modifier = Modifier.height(4.dp))
                                 Text(
                                     "$${carritoItem.precio} x ${carritoItem.cantidad}",
                                     style = MaterialTheme.typography.bodyLarge,
-                                    color = Color(0xFF1E90FF),
+                                    color = colorScheme.primary,
                                     fontFamily = FontFamily.Default,
                                     fontWeight = FontWeight.Bold
                                 )
                                 Text(
                                     "Subtotal: $${String.format("%.2f", carritoItem.precio * carritoItem.cantidad)}",
                                     style = MaterialTheme.typography.bodyMedium,
-                                    color = Color(0xFF39FF14)
+                                    color = colorScheme.secondary
                                 )
                             }
 
@@ -217,12 +221,12 @@ fun CarritoScreen(navController: NavController, userViewModel: UserViewModel) {
                                     Icon(
                                         Icons.Default.Add,
                                         contentDescription = "Aumentar",
-                                        tint = Color(0xFF39FF14)
+                                        tint = colorScheme.secondary
                                     )
                                 }
                                 Text(
                                     carritoItem.cantidad.toString(),
-                                    color = Color.White,
+                                    color = colorScheme.onPrimary,
                                     fontWeight = FontWeight.Bold
                                 )
                                 IconButton(
@@ -233,7 +237,7 @@ fun CarritoScreen(navController: NavController, userViewModel: UserViewModel) {
                                     Icon(
                                         Icons.Default.Delete,
                                         contentDescription = "Disminuir",
-                                        tint = Color(0xFF1E90FF)
+                                        tint = colorScheme.primary
                                     )
                                 }
                             }
@@ -244,7 +248,7 @@ fun CarritoScreen(navController: NavController, userViewModel: UserViewModel) {
                                 Icon(
                                     Icons.Default.Delete,
                                     contentDescription = "Eliminar",
-                                    tint = Color.Red
+                                    tint = colorScheme.error
                                 )
                             }
                         }
