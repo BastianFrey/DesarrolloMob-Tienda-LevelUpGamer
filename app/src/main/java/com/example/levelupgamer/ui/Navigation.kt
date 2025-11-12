@@ -6,11 +6,11 @@ import androidx.compose.material.icons.filled.ShoppingCart
 import androidx.compose.material3.Badge
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
+import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.graphics.Color
 import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavType
 import androidx.navigation.compose.NavHost
@@ -58,12 +58,22 @@ fun AppNavigation() {
                 navController = navController,
                 title = "Lista de Productos",
                 actions = {
+                    val colorScheme = MaterialTheme.colorScheme
                     IconButton(onClick = { navController.navigate("carrito") }) {
                         Box {
-                            Icon(Icons.Default.ShoppingCart, contentDescription = "Carrito", tint = Color(0xFF39FF14))
+                            Icon(
+                                Icons.Default.ShoppingCart,
+                                contentDescription = "Carrito",
+                                tint = colorScheme.secondary
+                            )
                             if (cantidadCarrito > 0) {
-                                Badge(modifier = Modifier.align(Alignment.TopEnd)) {
-                                    Text(cantidadCarrito.toString(), color = Color.White)
+                                Badge(
+                                    modifier = Modifier.align(Alignment.TopEnd),
+                                ) {
+                                    Text(
+                                        cantidadCarrito.toString(),
+                                        color = colorScheme.onBackground
+                                    )
                                 }
                             }
                         }

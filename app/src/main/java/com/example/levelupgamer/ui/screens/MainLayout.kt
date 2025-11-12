@@ -12,11 +12,9 @@ import androidx.compose.material3.*
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.font.FontFamily
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavController
-import com.example.levelupgamer.ui.theme.ElectricBlue
 import kotlinx.coroutines.launch
 
 @OptIn(ExperimentalMaterial3Api::class)
@@ -27,6 +25,7 @@ fun MainLayout(
     actions: @Composable RowScope.() -> Unit = {},
     content: @Composable () -> Unit
 ) {
+    val colorScheme = MaterialTheme.colorScheme
     val drawerState = rememberDrawerState(DrawerValue.Closed)
     val scope = rememberCoroutineScope()
 
@@ -36,23 +35,24 @@ fun MainLayout(
             ModalDrawerSheet(
                 modifier = Modifier
                     .width(220.dp),
-                drawerContainerColor = ElectricBlue
+                drawerContainerColor = colorScheme.primary
             ) {
                 Spacer(modifier = Modifier.height(24.dp))
 
                 Text(
                     "Menú",
                     style = MaterialTheme.typography.titleMedium.copy(
-                        color = Color(0xFF39FF14),
+                        color = colorScheme.secondary,
                         fontFamily = FontFamily.Default
                     ),
                     modifier = Modifier.padding(16.dp)
                 )
 
-                HorizontalDivider(color = Color.DarkGray, thickness = 1.dp)
+                HorizontalDivider(color = colorScheme.surface, thickness = 1.dp)
 
+                // Menú
                 NavigationDrawerItem(
-                    label = { Text("Inicio", color = Color(0xFF39FF14), fontFamily = FontFamily.Default) },
+                    label = { Text("Inicio", color = colorScheme.secondary, fontFamily = FontFamily.Default) },
                     selected = false,
                     onClick = {
                         navController.navigate("home")
@@ -62,7 +62,7 @@ fun MainLayout(
                 )
 
                 NavigationDrawerItem(
-                    label = { Text("Productos", color = Color(0xFF39FF14), fontFamily = FontFamily.Default) },
+                    label = { Text("Productos", color = colorScheme.secondary, fontFamily = FontFamily.Default) },
                     selected = false,
                     onClick = {
                         navController.navigate("productos")
@@ -72,7 +72,7 @@ fun MainLayout(
                 )
 
                 NavigationDrawerItem(
-                    label = { Text("Mi Cuenta", color = Color(0xFF39FF14), fontFamily = FontFamily.Default) },
+                    label = { Text("Mi Cuenta", color = colorScheme.secondary, fontFamily = FontFamily.Default) },
                     selected = false,
                     onClick = {
                         navController.navigate("miCuenta")
@@ -82,7 +82,7 @@ fun MainLayout(
                 )
 
                 NavigationDrawerItem(
-                    label = { Text("Escanear QR", color = Color(0xFF39FF14), fontFamily = FontFamily.Default) },
+                    label = { Text("Escanear QR", color = colorScheme.secondary, fontFamily = FontFamily.Default) },
                     selected = false,
                     onClick = {
                         navController.navigate("scanner")
@@ -92,7 +92,7 @@ fun MainLayout(
                 )
 
                 NavigationDrawerItem(
-                    label = { Text("Sobre Nosotros", color = Color(0xFF39FF14), fontFamily = FontFamily.Default) },
+                    label = { Text("Sobre Nosotros", color = colorScheme.secondary, fontFamily = FontFamily.Default) },
                     selected = false,
                     onClick = {
                         navController.navigate("nosotros")
@@ -102,7 +102,7 @@ fun MainLayout(
                 )
 
                 NavigationDrawerItem(
-                    label = { Text("Contacto", color = Color(0xFF39FF14), fontFamily = FontFamily.Default) },
+                    label = { Text("Contacto", color = colorScheme.secondary, fontFamily = FontFamily.Default) },
                     selected = false,
                     onClick = {
                         navController.navigate("contacto")
@@ -116,16 +116,16 @@ fun MainLayout(
         Scaffold(
             topBar = {
                 TopAppBar(
-                    title = { Text(title, color = Color(0xFF39FF14)) },
+                    title = { Text(title, color = colorScheme.secondary) },
                     navigationIcon = {
                         IconButton(onClick = { scope.launch { drawerState.open() } }) {
-                            Icon(Icons.Default.Menu, contentDescription = "Abrir menú", tint = Color(0xFF39FF14))
+                            Icon(Icons.Default.Menu, contentDescription = "Abrir menú", tint = colorScheme.secondary)
                         }
                     },
                     actions = actions,
                     colors = TopAppBarDefaults.topAppBarColors(
-                        containerColor = Color.Black,
-                        titleContentColor = Color(0xFF39FF14)
+                        containerColor = colorScheme.background,
+                        titleContentColor = colorScheme.secondary
                     )
                 )
             }
