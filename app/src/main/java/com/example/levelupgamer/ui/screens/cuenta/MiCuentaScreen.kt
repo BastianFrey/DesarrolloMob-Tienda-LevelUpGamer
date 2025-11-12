@@ -36,6 +36,16 @@ fun MiCuentaScreen(navController: NavController, userViewModel: UserViewModel) {
     var editedContrasena by remember { mutableStateOf("") }
     var editedAnioNacimiento by remember { mutableStateOf("") }
 
+    val textFieldColors = OutlinedTextFieldDefaults.colors(
+        focusedTextColor = colorScheme.onBackground,
+        unfocusedTextColor = colorScheme.onBackground,
+        focusedBorderColor = colorScheme.secondary,
+        unfocusedBorderColor = colorScheme.onSurface,
+        cursorColor = colorScheme.primary,
+        focusedLabelColor = colorScheme.secondary,
+        unfocusedLabelColor = colorScheme.onSurface,
+    )
+
     LaunchedEffect(currentUser) {
         currentUser?.let {
             editedNombre = it.nombre
@@ -88,7 +98,7 @@ fun MiCuentaScreen(navController: NavController, userViewModel: UserViewModel) {
                 .background(colorScheme.background)
         ) {
             if (currentUser == null) {
-                // Estado: No logueado
+                // Bloque No logueado
                 Column(
                     modifier = Modifier
                         .fillMaxSize()
@@ -140,9 +150,7 @@ fun MiCuentaScreen(navController: NavController, userViewModel: UserViewModel) {
                         modifier = Modifier
                             .fillMaxWidth()
                             .padding(bottom = 16.dp),
-                        colors = CardDefaults.cardColors(
-                            containerColor = colorScheme.surface
-                        )
+                        colors = CardDefaults.cardColors(containerColor = colorScheme.surface)
                     ) {
                         Column(
                             modifier = Modifier.padding(16.dp),
@@ -178,13 +186,12 @@ fun MiCuentaScreen(navController: NavController, userViewModel: UserViewModel) {
                     }
 
                     if (isEditing) {
+                        // --- MODO EDICIÓN ---
                         Card(
                             modifier = Modifier
                                 .fillMaxWidth()
                                 .padding(vertical = 8.dp),
-                            colors = CardDefaults.cardColors(
-                                containerColor = colorScheme.surface
-                            )
+                            colors = CardDefaults.cardColors(containerColor = colorScheme.surface)
                         ) {
                             Column(modifier = Modifier.padding(16.dp)) {
                                 Text(
@@ -199,36 +206,46 @@ fun MiCuentaScreen(navController: NavController, userViewModel: UserViewModel) {
                                     onValueChange = { editedNombre = it },
                                     label = { Text("Nombre", color = colorScheme.secondary) },
                                     textStyle = LocalTextStyle.current.copy(color = colorScheme.onSurface),
-                                    modifier = Modifier.fillMaxWidth()
+                                    modifier = Modifier.fillMaxWidth(),
+                                    colors = textFieldColors
                                 )
+
                                 Spacer(modifier = Modifier.height(12.dp))
+
                                 OutlinedTextField(
                                     value = editedCorreo,
                                     onValueChange = { editedCorreo = it },
                                     label = { Text("Correo", color = colorScheme.secondary) },
                                     textStyle = LocalTextStyle.current.copy(color = colorScheme.onSurface),
-                                    modifier = Modifier.fillMaxWidth()
+                                    modifier = Modifier.fillMaxWidth(),
+                                    colors = textFieldColors
                                 )
+
                                 Spacer(modifier = Modifier.height(12.dp))
+
                                 OutlinedTextField(
                                     value = editedContrasena,
                                     onValueChange = { editedContrasena = it },
                                     label = { Text("Nueva Contraseña (opcional)", color = colorScheme.secondary) },
                                     textStyle = LocalTextStyle.current.copy(color = colorScheme.onSurface),
                                     visualTransformation = PasswordVisualTransformation(),
-                                    modifier = Modifier.fillMaxWidth()
+                                    modifier = Modifier.fillMaxWidth(),
+                                    colors = textFieldColors
                                 )
+
                                 Spacer(modifier = Modifier.height(12.dp))
+
                                 OutlinedTextField(
                                     value = editedAnioNacimiento,
                                     onValueChange = { editedAnioNacimiento = it },
                                     label = { Text("Año de Nacimiento", color = colorScheme.secondary) },
                                     textStyle = LocalTextStyle.current.copy(color = colorScheme.onSurface),
-                                    modifier = Modifier.fillMaxWidth()
+                                    modifier = Modifier.fillMaxWidth(),
+                                    colors = textFieldColors
                                 )
+
                                 Spacer(modifier = Modifier.height(16.dp))
 
-                                // Botones de acción
                                 Row(
                                     modifier = Modifier.fillMaxWidth(),
                                     horizontalArrangement = Arrangement.SpaceBetween
@@ -254,6 +271,7 @@ fun MiCuentaScreen(navController: NavController, userViewModel: UserViewModel) {
                                         onClick = {
                                             val correoValido = editedCorreo.endsWith("@duocuc.cl") || editedCorreo.endsWith("@gmail.com") || editedCorreo.endsWith("@admin.cl")
                                             val anioValido = editedAnioNacimiento.toIntOrNull()?.let { it <= 2005 } ?: false
+
                                             when {
                                                 editedNombre.isBlank() || editedCorreo.isBlank() || editedAnioNacimiento.isBlank() -> {
                                                     mensaje = "Todos los campos son obligatorios"
@@ -294,19 +312,26 @@ fun MiCuentaScreen(navController: NavController, userViewModel: UserViewModel) {
                             }
                         }
                     } else {
+                        // --- MODO VISUALIZACIÓN (con Gamificación) ---
                         Card(
                             modifier = Modifier
                                 .fillMaxWidth()
                                 .padding(vertical = 8.dp),
-                            colors = CardDefaults.cardColors(
-                                containerColor = colorScheme.surface
-                            )
+                            colors = CardDefaults.cardColors(containerColor = colorScheme.surface)
                         ) {
                             Column(modifier = Modifier.padding(16.dp)) {
-                                InfoRow(etiqueta = "Nombre:", valor = user.nombre, color = colorScheme.secondary)
-                                InfoRow(etiqueta = "Correo:", valor = user.correo, color = colorScheme.primary)
-                                InfoRow(etiqueta = "Año de Nacimiento:", valor = user.anioNacimiento.toString(), color = colorScheme.secondary)
-                                InfoRow(etiqueta = "Edad:", valor = calcularEdad(user.anioNacimiento).toString() + " años", color = colorScheme.primary)
+                                // INFORMACIÓN BÁSICA
+                                InfoRow("Nombre:", user.nombre, colorScheme.secondary)
+                                InfoRow("Correo:", user.correo, colorScheme.primary)
+                                InfoRow("Año de Nacimiento:", user.anioNacimiento.toString(), colorScheme.secondary)
+                                InfoRow("Edad:", calcularEdad(user.anioNacimiento).toString() + " años", colorScheme.primary)
+
+                                HorizontalDivider(modifier = Modifier.padding(vertical = 8.dp), color = colorScheme.onSurface.copy(alpha = 0.2f))
+
+                                // --- INFORMACIÓN DE GAMIFICACIÓN ---
+                                InfoRow("Puntos LevelUp:", user.puntosLevelUp.toString(), colorScheme.secondary)
+                                InfoRow("Nivel Gamer:", getNivelName(user.nivelGamer), colorScheme.primary)
+                                // ----------------------------------
 
                                 Spacer(modifier = Modifier.height(16.dp))
 
@@ -349,6 +374,18 @@ fun MiCuentaScreen(navController: NavController, userViewModel: UserViewModel) {
         }
     }
 }
+
+fun getNivelName(nivel: Int): String {
+    return when (nivel) {
+        1 -> "Novato (Nivel 1)"
+        2 -> "Iniciado (Nivel 2)"
+        3 -> "Veterano (Nivel 3)"
+        4 -> "Maestro (Nivel 4)"
+        5 -> "LEYENDA (Nivel 5)"
+        else -> "Error"
+    }
+}
+
 
 @Composable
 fun InfoRow(etiqueta: String, valor: String, color: Color) {

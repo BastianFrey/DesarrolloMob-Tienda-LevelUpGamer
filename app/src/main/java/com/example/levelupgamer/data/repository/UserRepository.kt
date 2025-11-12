@@ -1,7 +1,8 @@
 package com.example.levelupgamer.repository
 
 import com.example.levelupgamer.data.User
-import com.example.levelupgamer.data.UserDao
+import com.example.levelupgamer.data.dao.UserDao
+
 
 class UserRepository(private val userDao: UserDao) {
 
@@ -19,5 +20,9 @@ class UserRepository(private val userDao: UserDao) {
 
     suspend fun getUserById(userId: Int): User? {
         return userDao.getUserById(userId)
+    }
+
+    suspend fun getUserByNombre(nombreReferido: String): User? {
+        return userDao.getUserByNombre(nombreReferido)
     }
 }

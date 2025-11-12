@@ -105,8 +105,20 @@ fun CarritoScreen(navController: NavController, userViewModel: UserViewModel) {
                             onClick = {
                                 scope.launch {
                                     snackbarHostState.showSnackbar("¡Compra finalizada con éxito!")
+
+                                    if (currentUser != null) {
+                                        userViewModel.agregarPuntos(50) { success ->
+                                            if (success) {
+
+                                                scope.launch {
+                                                    snackbarHostState.showSnackbar("¡Ganaste 50 Puntos LevelUp!")
+                                                }
+                                            }
+                                        }
+                                    }
+
+                                    carritoViewModel.limpiarCarrito()
                                 }
-                                carritoViewModel.limpiarCarrito()
                             },
                             modifier = Modifier.fillMaxWidth(),
                             colors = ButtonDefaults.buttonColors(

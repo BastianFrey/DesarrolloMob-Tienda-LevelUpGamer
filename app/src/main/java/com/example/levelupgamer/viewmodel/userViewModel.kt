@@ -22,13 +22,79 @@ class UserViewModel(application: Application) : AndroidViewModel(application) {
         repository = UserRepository(dao)
     }
 
-    fun register(nombre: String, correo: String, contrasena: String, anioNacimiento: Int, onComplete: (Boolean, String?) -> Unit) {
+    private fun calcularNivel(puntos: Int): Int {
+        return when {
+            puntos >= 5000 -> 5 // LEYENDA
+            puntos >= 2000 -> 4 // MAESTRO
+            puntos >= 500 -> 3  // VETERANO
+            puntos >= 100 -> 2  // INICIADO
+            else -> 1           // NOVATO
+        }
+    }
+
+    fun register(
+        nombre: String,
+        correo: String,
+        contrasena: String,
+        anioNacimiento: Int,
+        codigoReferido: String? = null,
+        onComplete: (Boolean, String?) -> Unit
+    ) {
         viewModelScope.launch {
             try {
-                repository.register(User(nombre = nombre, correo = correo, contrasena = contrasena, anioNacimiento = anioNacimiento))
+                val newUser = User(
+                    nombre = nombre,
+                    correo = correo,
+                    contrasena = contrasena,
+                    anioNacimiento = anioNacimiento,
+                    puntosLevelUp = 0,
+                    nivelGamer = 1
+                )
+                repository.register(newUser)
+
+                if (!codigoReferido.isNullOrBlank()) {
+
+                    val referidor = repository.getUserByNombre(codigoReferido)
+
+                    if (referidor != null) {
+                        val puntosPorReferido = 100 // Puntos a otorgar
+                        val nuevosPuntosReferidor = referidor.puntosLevelUp + puntosPorReferido
+                        val nuevoNivelReferidor = calcularNivel(nuevosPuntosReferidor)
+
+                        val updatedReferidor = referidor.copy(
+                            puntosLevelUp = nuevosPuntosReferidor,
+                            nivelGamer = nuevoNivelReferidor
+                        )
+                        repository.updateUser(updatedReferidor)
+                    }
+                }
+
                 onComplete(true, null)
+
             } catch (e: Exception) {
-                onComplete(false, e.message)
+                onComplete(false, e.message ?: "Error desconocido al registrar usuario.")
+            }
+        }
+    }
+
+    fun agregarPuntos(puntosGanados: Int, onComplete: (Boolean) -> Unit) {
+        viewModelScope.launch {
+            val user = _currentUser.value ?: return@launch
+
+            val nuevosPuntos = user.puntosLevelUp + puntosGanados
+            val nuevoNivel = calcularNivel(nuevosPuntos)
+
+            val updatedUser = user.copy(
+                puntosLevelUp = nuevosPuntos,
+                nivelGamer = nuevoNivel
+            )
+
+            try {
+                repository.updateUser(updatedUser)
+                _currentUser.value = updatedUser
+                onComplete(true)
+            } catch (e: Exception) {
+                onComplete(false)
             }
         }
     }
