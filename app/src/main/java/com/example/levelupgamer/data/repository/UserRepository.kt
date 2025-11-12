@@ -1,4 +1,4 @@
-package com.example.levelupgamer.repository
+package com.example.levelupgamer.data.repository
 
 import com.example.levelupgamer.data.User
 import com.example.levelupgamer.data.dao.UserDao
