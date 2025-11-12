@@ -22,11 +22,12 @@ import com.example.levelupgamer.viewmodel.UserViewModel
 fun HomeScreen(
     navController: NavController,
     userViewModel: UserViewModel
-) {
+) { val colorScheme = MaterialTheme.colorScheme
+
     Column(
         modifier = Modifier
             .fillMaxSize()
-            .background(MaterialTheme.colorScheme.background)
+            .background(colorScheme.background)
             .padding(16.dp),
         horizontalAlignment = Alignment.CenterHorizontally,
         verticalArrangement = Arrangement.Top
@@ -35,7 +36,7 @@ fun HomeScreen(
 
         Text(
             text = "¡Bienvenido a LevelUpGamer!",
-            color = MaterialTheme.colorScheme.secondary,
+            color = colorScheme.secondary,
             style = MaterialTheme.typography.headlineMedium,
             textAlign = TextAlign.Center,
             modifier = Modifier.fillMaxWidth()
@@ -59,6 +60,16 @@ fun HomeScreen(
             modifier = Modifier
                 .size(150.dp)
                 .scale(scale)
+        )
+
+        Spacer(modifier = Modifier.height(28.dp))
+
+        Text(
+            text = "Encuentra los mejores productos y lleva tu juego al siguiente nivel.",
+            color = colorScheme.onBackground,
+            style = MaterialTheme.typography.bodyLarge,
+            textAlign = TextAlign.Center,
+            modifier = Modifier.fillMaxWidth().padding(horizontal = 16.dp)
         )
     }
 }

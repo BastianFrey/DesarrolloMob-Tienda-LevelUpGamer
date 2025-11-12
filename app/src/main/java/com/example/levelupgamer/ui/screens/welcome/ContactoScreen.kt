@@ -5,7 +5,7 @@ import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.ArrowBack
+import androidx.compose.material.icons.automirrored.filled.ArrowBack
 import androidx.compose.material.icons.filled.Email
 import androidx.compose.material.icons.filled.Phone
 import androidx.compose.material.icons.filled.LocationOn
@@ -14,7 +14,6 @@ import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
@@ -25,27 +24,29 @@ import androidx.navigation.NavController
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun ContactoScreen(navController: NavController) {
+    val colorScheme = MaterialTheme.colorScheme
+
     Scaffold(
-        modifier = Modifier.background(Color.Black),
+        modifier = Modifier.background(colorScheme.background),
         topBar = {
             TopAppBar(
                 title = {
                     Text(
                         "Contáctanos",
-                        color = Color(0xFF39FF14)
+                        color = colorScheme.secondary
                     )
                 },
                 navigationIcon = {
                     IconButton(onClick = { navController.popBackStack() }) {
                         Icon(
-                            Icons.Default.ArrowBack,
+                            Icons.AutoMirrored.Filled.ArrowBack,
                             contentDescription = "Regresar",
-                            tint = Color(0xFF39FF14)
+                            tint = colorScheme.secondary
                         )
                     }
                 },
                 colors = TopAppBarDefaults.topAppBarColors(
-                    containerColor = Color.Black
+                    containerColor = colorScheme.background
                 )
             )
         }
@@ -54,7 +55,7 @@ fun ContactoScreen(navController: NavController) {
             modifier = Modifier
                 .fillMaxSize()
                 .padding(innerPadding)
-                .background(Color.Black)
+                .background(colorScheme.background)
                 .verticalScroll(rememberScrollState())
                 .padding(16.dp),
             horizontalAlignment = Alignment.CenterHorizontally
@@ -64,7 +65,7 @@ fun ContactoScreen(navController: NavController) {
                 text = "¿Necesitas Ayuda?",
                 fontSize = 28.sp,
                 fontWeight = FontWeight.Bold,
-                color = Color(0xFF39FF14),
+                color = colorScheme.secondary,
                 textAlign = TextAlign.Center,
                 modifier = Modifier.padding(bottom = 8.dp)
             )
@@ -72,7 +73,7 @@ fun ContactoScreen(navController: NavController) {
             Text(
                 text = "Estamos aquí para apoyarte en tu experiencia gaming",
                 fontSize = 16.sp,
-                color = Color(0xFF1E90FF),
+                color = colorScheme.primary,
                 textAlign = TextAlign.Center,
                 modifier = Modifier.padding(bottom = 32.dp)
             )
@@ -82,14 +83,16 @@ fun ContactoScreen(navController: NavController) {
                 modifier = Modifier
                     .fillMaxWidth()
                     .padding(vertical = 8.dp),
-                colors = CardDefaults.cardColors(containerColor = Color.DarkGray)
+                colors = CardDefaults.cardColors(
+                    containerColor = colorScheme.surface
+                )
             ) {
                 Column(modifier = Modifier.padding(16.dp)) {
                     Text(
                         "INFORMACIÓN DE CONTACTO",
                         fontSize = 18.sp,
                         fontWeight = FontWeight.Bold,
-                        color = Color(0xFF39FF14),
+                        color = colorScheme.secondary,
                         modifier = Modifier.padding(bottom = 16.dp)
                     )
 
@@ -128,14 +131,16 @@ fun ContactoScreen(navController: NavController) {
                 modifier = Modifier
                     .fillMaxWidth()
                     .padding(vertical = 8.dp),
-                colors = CardDefaults.cardColors(containerColor = Color.DarkGray)
+                colors = CardDefaults.cardColors(
+                    containerColor = colorScheme.surface
+                )
             ) {
                 Column(modifier = Modifier.padding(16.dp)) {
                     Text(
                         "HORARIOS DE ATENCIÓN",
                         fontSize = 18.sp,
                         fontWeight = FontWeight.Bold,
-                        color = Color(0xFF1E90FF),
+                        color = colorScheme.primary,
                         modifier = Modifier.padding(bottom = 12.dp)
                     )
 
@@ -161,14 +166,16 @@ fun ContactoScreen(navController: NavController) {
                 modifier = Modifier
                     .fillMaxWidth()
                     .padding(vertical = 8.dp),
-                colors = CardDefaults.cardColors(containerColor = Color.DarkGray)
+                colors = CardDefaults.cardColors(
+                    containerColor = colorScheme.surface
+                )
             ) {
                 Column(modifier = Modifier.padding(16.dp)) {
                     Text(
                         "SERVICIOS DISPONIBLES",
                         fontSize = 18.sp,
                         fontWeight = FontWeight.Bold,
-                        color = Color(0xFF39FF14),
+                        color = colorScheme.secondary,
                         modifier = Modifier.padding(bottom = 12.dp)
                     )
 
@@ -199,14 +206,16 @@ fun ContactoScreen(navController: NavController) {
                 modifier = Modifier
                     .fillMaxWidth()
                     .padding(vertical = 8.dp),
-                colors = CardDefaults.cardColors(containerColor = Color.DarkGray)
+                colors = CardDefaults.cardColors(
+                    containerColor = colorScheme.surface
+                )
             ) {
                 Column(modifier = Modifier.padding(16.dp)) {
                     Text(
                         "CONTACTO RÁPIDO",
                         fontSize = 18.sp,
                         fontWeight = FontWeight.Bold,
-                        color = Color(0xFF1E90FF),
+                        color = colorScheme.primary,
                         modifier = Modifier.padding(bottom = 16.dp)
                     )
 
@@ -216,19 +225,17 @@ fun ContactoScreen(navController: NavController) {
                                 "directos de WhatsApp para una respuesta inmediata. " +
                                 "Nuestro equipo de soporte está listo para ayudarte.",
                         fontSize = 14.sp,
-                        color = Color.White,
+                        color = colorScheme.onSurface,
                         lineHeight = 20.sp,
                         modifier = Modifier.padding(bottom = 16.dp)
                     )
 
                     Button(
-                        onClick = {
-
-                        },
+                        onClick = { /* Acción */ },
                         modifier = Modifier.fillMaxWidth(),
                         colors = ButtonDefaults.buttonColors(
-                            containerColor = Color(0xFF39FF14),
-                            contentColor = Color.Black
+                            containerColor = colorScheme.secondary,
+                            contentColor = colorScheme.onSecondary
                         )
                     ) {
                         Text("Contactar por WhatsApp", fontWeight = FontWeight.Bold)
@@ -241,7 +248,7 @@ fun ContactoScreen(navController: NavController) {
                 text = "\"¡Cualquier duda consulte!\"",
                 fontSize = 14.sp,
                 fontStyle = androidx.compose.ui.text.font.FontStyle.Italic,
-                color = Color(0xFF39FF14),
+                color = colorScheme.secondary,
                 textAlign = TextAlign.Center,
                 modifier = Modifier.padding(vertical = 24.dp)
             )
@@ -251,11 +258,15 @@ fun ContactoScreen(navController: NavController) {
 
 @Composable
 fun ContactoItem(icon: ImageVector, titulo: String, descripcion: String, accion: String) {
+    val colorScheme = MaterialTheme.colorScheme
+
     Card(
         modifier = Modifier
             .fillMaxWidth()
             .padding(vertical = 6.dp),
-        colors = CardDefaults.cardColors(containerColor = Color(0xFF2A2A2A))
+        colors = CardDefaults.cardColors(
+            containerColor = colorScheme.surface
+        )
     ) {
         Row(
             modifier = Modifier.padding(12.dp),
@@ -264,7 +275,7 @@ fun ContactoItem(icon: ImageVector, titulo: String, descripcion: String, accion:
             Icon(
                 imageVector = icon,
                 contentDescription = null,
-                tint = Color(0xFF1E90FF),
+                tint = colorScheme.primary,
                 modifier = Modifier
                     .size(40.dp)
                     .padding(end = 12.dp)
@@ -276,18 +287,18 @@ fun ContactoItem(icon: ImageVector, titulo: String, descripcion: String, accion:
                     text = titulo,
                     fontSize = 16.sp,
                     fontWeight = FontWeight.Bold,
-                    color = Color(0xFF39FF14)
+                    color = colorScheme.secondary
                 )
                 Text(
                     text = descripcion,
                     fontSize = 14.sp,
-                    color = Color.White,
+                    color = colorScheme.onBackground,
                     modifier = Modifier.padding(bottom = 4.dp)
                 )
                 Text(
                     text = accion,
                     fontSize = 12.sp,
-                    color = Color(0xFF1E90FF),
+                    color = colorScheme.primary,
                     fontStyle = androidx.compose.ui.text.font.FontStyle.Italic
                 )
             }
@@ -297,6 +308,8 @@ fun ContactoItem(icon: ImageVector, titulo: String, descripcion: String, accion:
 
 @Composable
 fun HorarioItem(dia: String, horario: String) {
+    val colorScheme = MaterialTheme.colorScheme
+
     Row(
         modifier = Modifier
             .fillMaxWidth()
@@ -306,13 +319,13 @@ fun HorarioItem(dia: String, horario: String) {
         Text(
             text = dia,
             fontSize = 14.sp,
-            color = Color.White,
+            color = colorScheme.onBackground,
             fontWeight = FontWeight.Medium
         )
         Text(
             text = horario,
             fontSize = 14.sp,
-            color = Color(0xFF39FF14),
+            color = colorScheme.secondary,
             fontWeight = FontWeight.Bold
         )
     }
@@ -320,6 +333,8 @@ fun HorarioItem(dia: String, horario: String) {
 
 @Composable
 fun ServicioItem(servicio: String, descripcion: String) {
+    val colorScheme = MaterialTheme.colorScheme
+
     Row(
         modifier = Modifier
             .fillMaxWidth()
@@ -329,7 +344,7 @@ fun ServicioItem(servicio: String, descripcion: String) {
         Text(
             text = "•",
             fontSize = 16.sp,
-            color = Color(0xFF1E90FF),
+            color = colorScheme.primary,
             modifier = Modifier.padding(end = 12.dp)
         )
         Column {
@@ -337,13 +352,13 @@ fun ServicioItem(servicio: String, descripcion: String) {
                 text = servicio,
                 fontSize = 16.sp,
                 fontWeight = FontWeight.Bold,
-                color = Color(0xFF39FF14),
+                color = colorScheme.secondary,
                 modifier = Modifier.padding(bottom = 2.dp)
             )
             Text(
                 text = descripcion,
                 fontSize = 14.sp,
-                color = Color.White
+                color = colorScheme.onBackground
             )
         }
     }

@@ -1,5 +1,6 @@
 package com.example.levelupgamer.ui.screens
 
+import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
@@ -7,7 +8,10 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material3.Button
+import androidx.compose.material3.ButtonDefaults
+import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedTextField
+import androidx.compose.material3.OutlinedTextFieldDefaults
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
@@ -28,11 +32,23 @@ fun EditProductoScreen(
     productoViewModel: ProductoViewModel,
     productoId: Int
 ) {
+    val colorScheme = MaterialTheme.colorScheme
+
     val productoState by productoViewModel.getProducto(productoId).collectAsState(initial = null)
 
     var nombre by remember { mutableStateOf("") }
     var descripcion by remember { mutableStateOf("") }
     var precio by remember { mutableStateOf("") }
+
+    val textFieldColors = OutlinedTextFieldDefaults.colors(
+        focusedTextColor = colorScheme.onBackground,
+        unfocusedTextColor = colorScheme.onBackground,
+        focusedBorderColor = colorScheme.secondary,
+        unfocusedBorderColor = colorScheme.onSurface,
+        cursorColor = colorScheme.primary,
+        focusedLabelColor = colorScheme.secondary,
+        unfocusedLabelColor = colorScheme.onSurface,
+    )
 
     productoState?.let {
         nombre = it.nombre
@@ -40,35 +56,56 @@ fun EditProductoScreen(
         precio = it.precio.toString()
     }
 
-    Scaffold {
+    Scaffold(
+        containerColor = colorScheme.background
+    ) { innerPadding ->
         Column(
             modifier = Modifier
                 .fillMaxSize()
-                .padding(it)
+                .padding(innerPadding)
+                .background(colorScheme.background)
                 .padding(16.dp),
             horizontalAlignment = Alignment.CenterHorizontally
         ) {
+            Text(
+                "Editar Producto",
+                style = MaterialTheme.typography.titleLarge,
+                color = colorScheme.primary,
+                modifier = Modifier.padding(bottom = 16.dp)
+            )
+
+            // Nombre
             OutlinedTextField(
                 value = nombre,
                 onValueChange = { nombre = it },
                 label = { Text("Nombre del producto") },
-                modifier = Modifier.fillMaxWidth()
+                modifier = Modifier.fillMaxWidth(),
+                colors = textFieldColors
             )
             Spacer(modifier = Modifier.height(8.dp))
+
+            // Descripción
             OutlinedTextField(
                 value = descripcion,
                 onValueChange = { descripcion = it },
                 label = { Text("Descripción") },
-                modifier = Modifier.fillMaxWidth()
+                modifier = Modifier.fillMaxWidth(),
+                colors = textFieldColors
             )
             Spacer(modifier = Modifier.height(8.dp))
+
+            // Precio
             OutlinedTextField(
                 value = precio,
                 onValueChange = { precio = it },
                 label = { Text("Precio") },
-                modifier = Modifier.fillMaxWidth()
+                modifier = Modifier.fillMaxWidth(),
+                colors = textFieldColors
             )
+
             Spacer(modifier = Modifier.height(16.dp))
+
+            // Guardar
             Button(
                 onClick = {
                     val productoActualizado = productoState?.copy(
@@ -81,7 +118,11 @@ fun EditProductoScreen(
                         navController.popBackStack()
                     }
                 },
-                modifier = Modifier.fillMaxWidth()
+                modifier = Modifier.fillMaxWidth(),
+                colors = ButtonDefaults.buttonColors(
+                    containerColor = colorScheme.secondary,
+                    contentColor = colorScheme.onSecondary
+                )
             ) {
                 Text("Guardar Cambios")
             }

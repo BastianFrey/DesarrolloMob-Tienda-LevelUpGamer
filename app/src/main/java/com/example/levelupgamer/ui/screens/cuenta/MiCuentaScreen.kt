@@ -3,7 +3,7 @@ package com.example.levelupgamer.ui.screens.cuenta
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.*
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.ArrowBack
+import androidx.compose.material.icons.automirrored.filled.ArrowBack
 import androidx.compose.material.icons.filled.Edit
 import androidx.compose.material.icons.filled.Person
 import androidx.compose.material3.*
@@ -23,6 +23,8 @@ import com.example.levelupgamer.viewmodel.UserViewModel
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun MiCuentaScreen(navController: NavController, userViewModel: UserViewModel) {
+    val colorScheme = MaterialTheme.colorScheme
+
     val currentUser by userViewModel.currentUser.collectAsState()
     val carritoViewModel: CarritoViewModel = viewModel()
 
@@ -43,22 +45,22 @@ fun MiCuentaScreen(navController: NavController, userViewModel: UserViewModel) {
     }
 
     Scaffold(
-        modifier = Modifier.background(Color.Black),
+        modifier = Modifier.background(colorScheme.background),
         topBar = {
             TopAppBar(
                 title = {
                     Text(
                         "Mi Cuenta",
-                        color = Color(0xFF39FF14),
+                        color = colorScheme.secondary,
                         fontFamily = FontFamily.Default
                     )
                 },
                 navigationIcon = {
                     IconButton(onClick = { navController.popBackStack() }) {
                         Icon(
-                            Icons.Default.ArrowBack,
+                            Icons.AutoMirrored.Filled.ArrowBack,
                             contentDescription = "Regresar",
-                            tint = Color(0xFF39FF14)
+                            tint = colorScheme.secondary
                         )
                     }
                 },
@@ -68,13 +70,13 @@ fun MiCuentaScreen(navController: NavController, userViewModel: UserViewModel) {
                             Icon(
                                 Icons.Default.Edit,
                                 contentDescription = "Editar",
-                                tint = Color(0xFF1E90FF)
+                                tint = colorScheme.primary
                             )
                         }
                     }
                 },
                 colors = TopAppBarDefaults.topAppBarColors(
-                    containerColor = Color.Black
+                    containerColor = colorScheme.background
                 )
             )
         }
@@ -83,9 +85,10 @@ fun MiCuentaScreen(navController: NavController, userViewModel: UserViewModel) {
             modifier = Modifier
                 .fillMaxSize()
                 .padding(innerPadding)
-                .background(Color.Black)
+                .background(colorScheme.background)
         ) {
             if (currentUser == null) {
+                // Estado: No logueado
                 Column(
                     modifier = Modifier
                         .fillMaxSize()
@@ -96,20 +99,20 @@ fun MiCuentaScreen(navController: NavController, userViewModel: UserViewModel) {
                     Icon(
                         Icons.Default.Person,
                         contentDescription = "No logueado",
-                        tint = Color(0xFF39FF14),
+                        tint = colorScheme.secondary,
                         modifier = Modifier.size(64.dp)
                     )
                     Spacer(modifier = Modifier.height(16.dp))
                     Text(
                         "No has iniciado sesión",
                         style = MaterialTheme.typography.titleMedium,
-                        color = Color(0xFF39FF14)
+                        color = colorScheme.secondary
                     )
                     Spacer(modifier = Modifier.height(8.dp))
                     Text(
                         "Inicia sesión para ver tu cuenta",
                         style = MaterialTheme.typography.bodyMedium,
-                        color = Color(0xFFD3D3D3)
+                        color = colorScheme.onSurface
                     )
                     Spacer(modifier = Modifier.height(24.dp))
                     Button(
@@ -119,8 +122,8 @@ fun MiCuentaScreen(navController: NavController, userViewModel: UserViewModel) {
                             }
                         },
                         colors = ButtonDefaults.buttonColors(
-                            containerColor = Color(0xFF39FF14),
-                            contentColor = Color.Black
+                            containerColor = colorScheme.secondary,
+                            contentColor = colorScheme.onSecondary
                         )
                     ) {
                         Text("Iniciar Sesión")
@@ -137,7 +140,9 @@ fun MiCuentaScreen(navController: NavController, userViewModel: UserViewModel) {
                         modifier = Modifier
                             .fillMaxWidth()
                             .padding(bottom = 16.dp),
-                        colors = CardDefaults.cardColors(containerColor = Color.DarkGray)
+                        colors = CardDefaults.cardColors(
+                            containerColor = colorScheme.surface
+                        )
                     ) {
                         Column(
                             modifier = Modifier.padding(16.dp),
@@ -146,20 +151,20 @@ fun MiCuentaScreen(navController: NavController, userViewModel: UserViewModel) {
                             Icon(
                                 Icons.Default.Person,
                                 contentDescription = "Usuario",
-                                tint = Color(0xFF39FF14),
+                                tint = colorScheme.secondary,
                                 modifier = Modifier.size(48.dp)
                             )
                             Spacer(modifier = Modifier.height(8.dp))
                             Text(
                                 "Bienvenido, ${user.nombre}",
                                 style = MaterialTheme.typography.titleMedium,
-                                color = Color(0xFF39FF14),
+                                color = colorScheme.secondary,
                                 fontWeight = FontWeight.Bold
                             )
                             Text(
                                 "Level-Up Gamer",
                                 style = MaterialTheme.typography.bodyMedium,
-                                color = Color(0xFF1E90FF)
+                                color = colorScheme.primary
                             )
                         }
                     }
@@ -167,7 +172,7 @@ fun MiCuentaScreen(navController: NavController, userViewModel: UserViewModel) {
                     mensaje?.let {
                         Text(
                             text = it,
-                            color = if (it.contains("éxito") || it.contains("correctamente")) Color(0xFF39FF14) else Color.Red,
+                            color = if (it.contains("éxito") || it.contains("correctamente")) colorScheme.secondary else colorScheme.error,
                             modifier = Modifier.padding(bottom = 16.dp)
                         )
                     }
@@ -177,57 +182,53 @@ fun MiCuentaScreen(navController: NavController, userViewModel: UserViewModel) {
                             modifier = Modifier
                                 .fillMaxWidth()
                                 .padding(vertical = 8.dp),
-                            colors = CardDefaults.cardColors(containerColor = Color.DarkGray)
+                            colors = CardDefaults.cardColors(
+                                containerColor = colorScheme.surface
+                            )
                         ) {
                             Column(modifier = Modifier.padding(16.dp)) {
                                 Text(
                                     "Editar Información",
                                     style = MaterialTheme.typography.titleMedium,
-                                    color = Color(0xFF39FF14),
+                                    color = colorScheme.secondary,
                                     modifier = Modifier.padding(bottom = 16.dp)
                                 )
 
                                 OutlinedTextField(
                                     value = editedNombre,
                                     onValueChange = { editedNombre = it },
-                                    label = { Text("Nombre", color = Color(0xFF39FF14)) },
-                                    textStyle = LocalTextStyle.current.copy(color = Color.White),
+                                    label = { Text("Nombre", color = colorScheme.secondary) },
+                                    textStyle = LocalTextStyle.current.copy(color = colorScheme.onSurface),
                                     modifier = Modifier.fillMaxWidth()
                                 )
-
                                 Spacer(modifier = Modifier.height(12.dp))
-
                                 OutlinedTextField(
                                     value = editedCorreo,
                                     onValueChange = { editedCorreo = it },
-                                    label = { Text("Correo", color = Color(0xFF39FF14)) },
-                                    textStyle = LocalTextStyle.current.copy(color = Color.White),
+                                    label = { Text("Correo", color = colorScheme.secondary) },
+                                    textStyle = LocalTextStyle.current.copy(color = colorScheme.onSurface),
                                     modifier = Modifier.fillMaxWidth()
                                 )
-
                                 Spacer(modifier = Modifier.height(12.dp))
-
                                 OutlinedTextField(
                                     value = editedContrasena,
                                     onValueChange = { editedContrasena = it },
-                                    label = { Text("Nueva Contraseña (opcional)", color = Color(0xFF39FF14)) },
-                                    textStyle = LocalTextStyle.current.copy(color = Color.White),
+                                    label = { Text("Nueva Contraseña (opcional)", color = colorScheme.secondary) },
+                                    textStyle = LocalTextStyle.current.copy(color = colorScheme.onSurface),
                                     visualTransformation = PasswordVisualTransformation(),
                                     modifier = Modifier.fillMaxWidth()
                                 )
-
                                 Spacer(modifier = Modifier.height(12.dp))
-
                                 OutlinedTextField(
                                     value = editedAnioNacimiento,
                                     onValueChange = { editedAnioNacimiento = it },
-                                    label = { Text("Año de Nacimiento", color = Color(0xFF39FF14)) },
-                                    textStyle = LocalTextStyle.current.copy(color = Color.White),
+                                    label = { Text("Año de Nacimiento", color = colorScheme.secondary) },
+                                    textStyle = LocalTextStyle.current.copy(color = colorScheme.onSurface),
                                     modifier = Modifier.fillMaxWidth()
                                 )
-
                                 Spacer(modifier = Modifier.height(16.dp))
 
+                                // Botones de acción
                                 Row(
                                     modifier = Modifier.fillMaxWidth(),
                                     horizontalArrangement = Arrangement.SpaceBetween
@@ -242,17 +243,17 @@ fun MiCuentaScreen(navController: NavController, userViewModel: UserViewModel) {
                                             mensaje = null
                                         },
                                         colors = ButtonDefaults.buttonColors(
-                                            containerColor = Color.Gray
+                                            containerColor = colorScheme.tertiary,
+                                            contentColor = colorScheme.onTertiary
                                         )
                                     ) {
-                                        Text("Cancelar", color = Color.White)
+                                        Text("Cancelar")
                                     }
 
                                     Button(
                                         onClick = {
                                             val correoValido = editedCorreo.endsWith("@duocuc.cl") || editedCorreo.endsWith("@gmail.com") || editedCorreo.endsWith("@admin.cl")
                                             val anioValido = editedAnioNacimiento.toIntOrNull()?.let { it <= 2005 } ?: false
-
                                             when {
                                                 editedNombre.isBlank() || editedCorreo.isBlank() || editedAnioNacimiento.isBlank() -> {
                                                     mensaje = "Todos los campos son obligatorios"
@@ -283,8 +284,8 @@ fun MiCuentaScreen(navController: NavController, userViewModel: UserViewModel) {
                                             }
                                         },
                                         colors = ButtonDefaults.buttonColors(
-                                            containerColor = Color(0xFF39FF14),
-                                            contentColor = Color.Black
+                                            containerColor = colorScheme.secondary,
+                                            contentColor = colorScheme.onSecondary
                                         )
                                     ) {
                                         Text("Guardar Cambios")
@@ -297,26 +298,28 @@ fun MiCuentaScreen(navController: NavController, userViewModel: UserViewModel) {
                             modifier = Modifier
                                 .fillMaxWidth()
                                 .padding(vertical = 8.dp),
-                            colors = CardDefaults.cardColors(containerColor = Color.DarkGray)
+                            colors = CardDefaults.cardColors(
+                                containerColor = colorScheme.surface
+                            )
                         ) {
                             Column(modifier = Modifier.padding(16.dp)) {
-                                InfoRow("Nombre:", user.nombre, Color(0xFF39FF14))
-                                InfoRow("Correo:", user.correo, Color(0xFF1E90FF))
-                                InfoRow("Año de Nacimiento:", user.anioNacimiento.toString(), Color(0xFF39FF14))
-                                InfoRow("Edad:", calcularEdad(user.anioNacimiento).toString() + " años", Color(0xFF1E90FF))
+                                InfoRow(etiqueta = "Nombre:", valor = user.nombre, color = colorScheme.secondary)
+                                InfoRow(etiqueta = "Correo:", valor = user.correo, color = colorScheme.primary)
+                                InfoRow(etiqueta = "Año de Nacimiento:", valor = user.anioNacimiento.toString(), color = colorScheme.secondary)
+                                InfoRow(etiqueta = "Edad:", valor = calcularEdad(user.anioNacimiento).toString() + " años", color = colorScheme.primary)
 
                                 Spacer(modifier = Modifier.height(16.dp))
 
                                 if (user.correo.endsWith("@duocuc.cl")) {
                                     Text(
                                         "🎓 Beneficio DuocUC: 20% de descuento permanente",
-                                        color = Color(0xFF39FF14),
+                                        color = colorScheme.secondary,
                                         fontWeight = FontWeight.Bold
                                     )
                                 } else {
                                     Text(
                                         "👤 Cuenta estándar",
-                                        color = Color(0xFF1E90FF),
+                                        color = colorScheme.primary,
                                         fontWeight = FontWeight.Medium
                                     )
                                 }
@@ -334,8 +337,8 @@ fun MiCuentaScreen(navController: NavController, userViewModel: UserViewModel) {
                                 .fillMaxWidth()
                                 .padding(top = 16.dp),
                             colors = ButtonDefaults.buttonColors(
-                                containerColor = Color.Red,
-                                contentColor = Color.White
+                                containerColor = colorScheme.error,
+                                contentColor = colorScheme.onError
                             )
                         ) {
                             Text("Cerrar Sesión")
@@ -349,6 +352,7 @@ fun MiCuentaScreen(navController: NavController, userViewModel: UserViewModel) {
 
 @Composable
 fun InfoRow(etiqueta: String, valor: String, color: Color) {
+    val colorScheme = MaterialTheme.colorScheme
     Row(
         modifier = Modifier
             .fillMaxWidth()
@@ -357,7 +361,7 @@ fun InfoRow(etiqueta: String, valor: String, color: Color) {
     ) {
         Text(
             text = etiqueta,
-            color = Color(0xFFD3D3D3),
+            color = colorScheme.onSurface,
             fontWeight = FontWeight.Medium
         )
         Text(

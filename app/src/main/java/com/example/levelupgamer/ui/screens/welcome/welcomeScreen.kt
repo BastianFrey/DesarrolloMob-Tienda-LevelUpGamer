@@ -6,7 +6,6 @@ import androidx.compose.material3.*
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.font.FontFamily
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
@@ -16,11 +15,12 @@ import androidx.navigation.NavController
 
 @Composable
 fun WelcomeScreen(navController: NavController) {
+    val colorScheme = MaterialTheme.colorScheme
 
     Column(
         modifier = Modifier
             .fillMaxSize()
-            .background(Color.Black)
+            .background(colorScheme.background)
             .padding(16.dp),
         horizontalAlignment = Alignment.CenterHorizontally,
         verticalArrangement = Arrangement.Center
@@ -30,7 +30,7 @@ fun WelcomeScreen(navController: NavController) {
             text = "¡Bienvenido a LevelUP-Gamer!",
             fontSize = 24.sp,
             fontWeight = FontWeight.Bold,
-            color = Color(0xFF39FF14),
+            color = colorScheme.secondary,
             fontFamily = FontFamily.Default
         )
 
@@ -40,7 +40,7 @@ fun WelcomeScreen(navController: NavController) {
             text = "Tu tienda gamer favorita",
             textAlign = TextAlign.Center,
             fontSize = 16.sp,
-            color = Color(0xFF39FF14),
+            color = colorScheme.secondary,
             fontFamily = FontFamily.Default
         )
 
@@ -50,12 +50,13 @@ fun WelcomeScreen(navController: NavController) {
             onClick = { navController.navigate("login") },
             modifier = Modifier.fillMaxWidth(),
             colors = ButtonDefaults.buttonColors(
-                containerColor = Color(0xFF39FF14),
-                contentColor = Color.Black
+                containerColor = colorScheme.secondary,
+                contentColor = colorScheme.onSecondary
             )
         ) {
             Text(
                 "Iniciar Sesión",
+                color = colorScheme.onSecondary,
                 fontFamily = FontFamily.Default
             )
         }
@@ -66,12 +67,13 @@ fun WelcomeScreen(navController: NavController) {
             onClick = { navController.navigate("register") },
             modifier = Modifier.fillMaxWidth(),
             colors = ButtonDefaults.buttonColors(
-                containerColor = Color(0xFF39FF14),
-                contentColor = Color.Black
+                containerColor = colorScheme.secondary,
+                contentColor = colorScheme.onSecondary
             )
         ) {
             Text(
                 "Registrarse",
+                color = colorScheme.onSecondary,
                 fontFamily = FontFamily.Default
             )
         }

@@ -5,12 +5,11 @@ import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.ArrowBack
+import androidx.compose.material.icons.automirrored.filled.ArrowBack
 import androidx.compose.material3.*
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
@@ -20,27 +19,29 @@ import androidx.navigation.NavController
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun NosotrosScreen(navController: NavController) {
+    val colorScheme = MaterialTheme.colorScheme
+
     Scaffold(
-        modifier = Modifier.background(Color.Black),
+        modifier = Modifier.background(colorScheme.background),
         topBar = {
             TopAppBar(
                 title = {
                     Text(
                         "Sobre Nosotros",
-                        color = Color(0xFF39FF14)
+                        color = colorScheme.secondary
                     )
                 },
                 navigationIcon = {
                     IconButton(onClick = { navController.popBackStack() }) {
                         Icon(
-                            Icons.Default.ArrowBack,
+                            Icons.AutoMirrored.Filled.ArrowBack,
                             contentDescription = "Regresar",
-                            tint = Color(0xFF39FF14)
+                            tint = colorScheme.secondary
                         )
                     }
                 },
                 colors = TopAppBarDefaults.topAppBarColors(
-                    containerColor = Color.Black
+                    containerColor = colorScheme.background
                 )
             )
         }
@@ -49,7 +50,7 @@ fun NosotrosScreen(navController: NavController) {
             modifier = Modifier
                 .fillMaxSize()
                 .padding(innerPadding)
-                .background(Color.Black)
+                .background(colorScheme.background)
                 .verticalScroll(rememberScrollState())
                 .padding(16.dp),
             horizontalAlignment = Alignment.CenterHorizontally
@@ -59,7 +60,7 @@ fun NosotrosScreen(navController: NavController) {
                 text = "LEVEL-UP GAMER",
                 fontSize = 32.sp,
                 fontWeight = FontWeight.Bold,
-                color = Color(0xFF39FF14),
+                color = colorScheme.secondary,
                 textAlign = TextAlign.Center,
                 modifier = Modifier.padding(bottom = 8.dp)
             )
@@ -67,24 +68,27 @@ fun NosotrosScreen(navController: NavController) {
             Text(
                 text = "Tu Tienda Gaming en Chile",
                 fontSize = 18.sp,
-                color = Color(0xFF1E90FF),
+                color = colorScheme.primary,
                 textAlign = TextAlign.Center,
                 modifier = Modifier.padding(bottom = 32.dp)
             )
 
-
+            // Nuestra Misión
             Card(
                 modifier = Modifier
                     .fillMaxWidth()
                     .padding(vertical = 8.dp),
-                colors = CardDefaults.cardColors(containerColor = Color.DarkGray)
+                colors = CardDefaults.cardColors(
+                    containerColor = colorScheme.surface
+                )
             ) {
                 Column(modifier = Modifier.padding(16.dp)) {
                     Text(
                         "NUESTRA MISIÓN",
                         fontSize = 20.sp,
                         fontWeight = FontWeight.Bold,
-                        color = Color(0xFF39FF14),
+
+                        color = colorScheme.secondary,
                         modifier = Modifier.padding(bottom = 8.dp)
                     )
                     Text(
@@ -92,25 +96,28 @@ fun NosotrosScreen(navController: NavController) {
                                 "ofreciendo una experiencia de compra única y personalizada, con un " +
                                 "enfoque en la satisfacción del cliente y el crecimiento de la comunidad gamer.",
                         fontSize = 14.sp,
-                        color = Color.White,
+                        color = colorScheme.onBackground,
                         lineHeight = 20.sp
                     )
                 }
             }
 
 
+            // Nuestra Visión
             Card(
                 modifier = Modifier
                     .fillMaxWidth()
                     .padding(vertical = 8.dp),
-                colors = CardDefaults.cardColors(containerColor = Color.DarkGray)
+                colors = CardDefaults.cardColors(
+                    containerColor = colorScheme.surface
+                )
             ) {
                 Column(modifier = Modifier.padding(16.dp)) {
                     Text(
                         "NUESTRA VISIÓN",
                         fontSize = 20.sp,
                         fontWeight = FontWeight.Bold,
-                        color = Color(0xFF1E90FF),
+                        color = colorScheme.primary,
                         modifier = Modifier.padding(bottom = 8.dp)
                     )
                     Text(
@@ -119,25 +126,28 @@ fun NosotrosScreen(navController: NavController) {
                                 "y un programa de fidelización basado en gamificación que recompense " +
                                 "a nuestros clientes más fieles.",
                         fontSize = 14.sp,
-                        color = Color.White,
+                        color = colorScheme.onBackground,
                         lineHeight = 20.sp
                     )
                 }
             }
 
 
+            // Nuestra Historia
             Card(
                 modifier = Modifier
                     .fillMaxWidth()
                     .padding(vertical = 8.dp),
-                colors = CardDefaults.cardColors(containerColor = Color.DarkGray)
+                colors = CardDefaults.cardColors(
+                    containerColor = colorScheme.surface
+                )
             ) {
                 Column(modifier = Modifier.padding(16.dp)) {
                     Text(
                         "NUESTRA HISTORIA",
                         fontSize = 20.sp,
                         fontWeight = FontWeight.Bold,
-                        color = Color(0xFF39FF14),
+                        color = colorScheme.secondary,
                         modifier = Modifier.padding(bottom = 8.dp)
                     )
                     Text(
@@ -146,25 +156,28 @@ fun NosotrosScreen(navController: NavController) {
                                 "física, realizamos despachos a todo el país, llevando la mejor " +
                                 "experiencia gaming directamente a tu hogar.",
                         fontSize = 14.sp,
-                        color = Color.White,
+                        color = colorScheme.onBackground,
                         lineHeight = 20.sp
                     )
                 }
             }
 
 
+            // Nuestros Valores
             Card(
                 modifier = Modifier
                     .fillMaxWidth()
                     .padding(vertical = 8.dp),
-                colors = CardDefaults.cardColors(containerColor = Color.DarkGray)
+                colors = CardDefaults.cardColors(
+                    containerColor = colorScheme.surface
+                )
             ) {
                 Column(modifier = Modifier.padding(16.dp)) {
                     Text(
                         "NUESTROS VALORES",
                         fontSize = 20.sp,
                         fontWeight = FontWeight.Bold,
-                        color = Color(0xFF1E90FF),
+                        color = colorScheme.primary,
                         modifier = Modifier.padding(bottom = 12.dp)
                     )
 
@@ -195,18 +208,21 @@ fun NosotrosScreen(navController: NavController) {
             }
 
 
+            // Impacto Comunitario
             Card(
                 modifier = Modifier
                     .fillMaxWidth()
                     .padding(vertical = 8.dp),
-                colors = CardDefaults.cardColors(containerColor = Color.DarkGray)
+                colors = CardDefaults.cardColors(
+                    containerColor = colorScheme.surface
+                )
             ) {
                 Column(modifier = Modifier.padding(16.dp)) {
                     Text(
                         "IMPACTO COMUNITARIO",
                         fontSize = 20.sp,
                         fontWeight = FontWeight.Bold,
-                        color = Color(0xFF39FF14),
+                        color = colorScheme.secondary,
                         modifier = Modifier.padding(bottom = 8.dp)
                     )
                     Text(
@@ -214,7 +230,7 @@ fun NosotrosScreen(navController: NavController) {
                                 "Organizamos y patrocinamos eventos locales, torneos y meetups " +
                                 "para fortalecer nuestra comunidad.",
                         fontSize = 14.sp,
-                        color = Color.White,
+                        color = colorScheme.onBackground,
                         lineHeight = 20.sp
                     )
                 }
@@ -225,7 +241,7 @@ fun NosotrosScreen(navController: NavController) {
                 text = "\"PCFactory nos COPIO\"",
                 fontSize = 16.sp,
                 fontStyle = androidx.compose.ui.text.font.FontStyle.Italic,
-                color = Color(0xFF39FF14),
+                color = colorScheme.secondary,
                 textAlign = TextAlign.Center,
                 modifier = Modifier
                     .padding(vertical = 24.dp)
@@ -237,6 +253,8 @@ fun NosotrosScreen(navController: NavController) {
 
 @Composable
 fun ValorItem(icon: String, titulo: String, descripcion: String) {
+    val colorScheme = MaterialTheme.colorScheme
+
     Row(
         modifier = Modifier
             .fillMaxWidth()
@@ -246,6 +264,7 @@ fun ValorItem(icon: String, titulo: String, descripcion: String) {
         Text(
             text = icon,
             fontSize = 24.sp,
+            color = colorScheme.onBackground,
             modifier = Modifier.padding(end = 12.dp)
         )
         Column {
@@ -253,13 +272,13 @@ fun ValorItem(icon: String, titulo: String, descripcion: String) {
                 text = titulo,
                 fontSize = 16.sp,
                 fontWeight = FontWeight.Bold,
-                color = Color(0xFF39FF14),
+                color = colorScheme.secondary,
                 modifier = Modifier.padding(bottom = 4.dp)
             )
             Text(
                 text = descripcion,
                 fontSize = 14.sp,
-                color = Color.White,
+                color = colorScheme.onBackground,
                 lineHeight = 18.sp
             )
         }

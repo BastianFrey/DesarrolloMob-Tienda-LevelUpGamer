@@ -1,9 +1,10 @@
 package com.example.levelupgamer.ui.screens
 
+import androidx.compose.foundation.background
 import androidx.compose.ui.text.input.PasswordVisualTransformation
-
 import androidx.compose.foundation.layout.*
 import androidx.compose.material3.*
+import androidx.compose.material3.TabRowDefaults.tabIndicatorOffset
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -15,62 +16,87 @@ import androidx.navigation.NavController
 
 @Composable
 fun MainScreen(navController: NavController) {
+    val colorScheme = MaterialTheme.colorScheme
     var currentScreen by remember { mutableStateOf("welcome") }
 
     Column(
         modifier = Modifier
             .fillMaxSize()
+            .background(colorScheme.background)
             .padding(16.dp),
         horizontalAlignment = Alignment.CenterHorizontally,
-        verticalArrangement = Arrangement.Center
+        verticalArrangement = Arrangement.Top
     ) {
         // Título de la app
         Text(
             text = "LevelUP-Gamer",
             fontSize = 28.sp,
             fontWeight = FontWeight.Bold,
-            color = MaterialTheme.colorScheme.primary
+            color = colorScheme.secondary
         )
 
         Spacer(modifier = Modifier.height(32.dp))
 
-        // Navegación entre pestañas
-        TabRow(selectedTabIndex = when (currentScreen) {
-            "welcome" -> 0
-            "login" -> 1
-            "register" -> 2
-            else -> 0
-        }) {
+        TabRow(
+            selectedTabIndex = when (currentScreen) {
+                "welcome" -> 0
+                "login" -> 1
+                "register" -> 2
+                else -> 0
+            },
+            containerColor = colorScheme.background,
+            contentColor = colorScheme.onBackground,
+            indicator = { tabPositions ->
+                TabRowDefaults.Indicator(
+                    Modifier.tabIndicatorOffset(tabPositions[when (currentScreen) {
+                        "welcome" -> 0
+                        "login" -> 1
+                        "register" -> 2
+                        else -> 0
+                    }]),
+                    color = colorScheme.secondary
+                )
+            }
+        ) {
             Tab(
                 selected = currentScreen == "welcome",
                 onClick = { currentScreen = "welcome" },
+                selectedContentColor = colorScheme.secondary,
+                unselectedContentColor = colorScheme.onBackground,
                 text = { Text("Inicio") }
             )
             Tab(
                 selected = currentScreen == "login",
-                onClick = {navController.navigate("login")},
+                onClick = { currentScreen = "login" },
+                selectedContentColor = colorScheme.secondary,
+                unselectedContentColor = colorScheme.onBackground,
                 text = { Text("Iniciar Sesión") }
             )
             Tab(
                 selected = currentScreen == "register",
                 onClick = { currentScreen = "register" },
+                selectedContentColor = colorScheme.secondary,
+                unselectedContentColor = colorScheme.onBackground,
                 text = { Text("Registrarse") }
             )
         }
 
         Spacer(modifier = Modifier.height(32.dp))
 
-        // Contenido según la pestaña seleccionada
-        when (currentScreen) {
-            "welcome" -> WelcomeScreen()
-            "login" -> LoginScreen(navController)
-            "register" -> RegisterScreen(navController)
+        Box(modifier = Modifier.padding(horizontal = 8.dp)) {
+            when (currentScreen) {
+                "welcome" -> WelcomeScreenInternal()
+                "login" -> LoginScreenInternal(navController)
+                "register" -> RegisterScreenInternal(navController)
+            }
         }
     }
 }
 
+
 @Composable
-fun WelcomeScreen() {
+fun WelcomeScreenInternal() {
+    val colorScheme = MaterialTheme.colorScheme
     Column(
         horizontalAlignment = Alignment.CenterHorizontally,
         verticalArrangement = Arrangement.Center
@@ -79,13 +105,14 @@ fun WelcomeScreen() {
             text = "¡Bienvenido a LevelUP-Gamer!",
             fontSize = 24.sp,
             fontWeight = FontWeight.Bold,
+            color = colorScheme.secondary,
             modifier = Modifier.padding(bottom = 16.dp)
         )
 
         Text(
             text = "Tu tienda de productos gamer favorita",
             fontSize = 16.sp,
-            color = MaterialTheme.colorScheme.onSurfaceVariant
+            color = colorScheme.onBackground
         )
 
         Spacer(modifier = Modifier.height(24.dp))
@@ -93,15 +120,27 @@ fun WelcomeScreen() {
         Text(
             text = "Encuentra los mejores productos gaming al mejor precio",
             fontSize = 14.sp,
+            color = colorScheme.onSurface,
             textAlign = TextAlign.Center
         )
     }
 }
 
 @Composable
-fun LoginScreen(navController: NavController) {
+fun LoginScreenInternal(navController: NavController) {
+    val colorScheme = MaterialTheme.colorScheme
     var email by remember { mutableStateOf("") }
     var password by remember { mutableStateOf("") }
+
+    val textFieldColors = OutlinedTextFieldDefaults.colors(
+        focusedTextColor = colorScheme.onBackground,
+        unfocusedTextColor = colorScheme.onBackground,
+        focusedBorderColor = colorScheme.secondary,
+        unfocusedBorderColor = colorScheme.onSurface,
+        cursorColor = colorScheme.primary,
+        focusedLabelColor = colorScheme.secondary,
+        unfocusedLabelColor = colorScheme.onSurface,
+    )
 
     Column(
         horizontalAlignment = Alignment.CenterHorizontally,
@@ -111,6 +150,7 @@ fun LoginScreen(navController: NavController) {
             text = "Iniciar Sesión",
             fontSize = 20.sp,
             fontWeight = FontWeight.Bold,
+            color = colorScheme.primary,
             modifier = Modifier.padding(bottom = 24.dp)
         )
 
@@ -120,7 +160,8 @@ fun LoginScreen(navController: NavController) {
             label = { Text("Correo electrónico") },
             modifier = Modifier
                 .fillMaxWidth()
-                .padding(bottom = 16.dp)
+                .padding(bottom = 16.dp),
+            colors = textFieldColors
         )
 
         OutlinedTextField(
@@ -130,14 +171,17 @@ fun LoginScreen(navController: NavController) {
             modifier = Modifier
                 .fillMaxWidth()
                 .padding(bottom = 24.dp),
-            visualTransformation = PasswordVisualTransformation()
+            visualTransformation = PasswordVisualTransformation(),
+            colors = textFieldColors
         )
 
         Button(
-            onClick = {
-                // Aquí iría la lógica de inicio de sesión
-            },
-            modifier = Modifier.fillMaxWidth()
+            onClick = { /* Lógica de inicio de sesión */ },
+            modifier = Modifier.fillMaxWidth(),
+            colors = ButtonDefaults.buttonColors(
+                containerColor = colorScheme.secondary,
+                contentColor = colorScheme.onSecondary
+            )
         ) {
             Text("Iniciar Sesión")
         }
@@ -145,11 +189,22 @@ fun LoginScreen(navController: NavController) {
 }
 
 @Composable
-fun RegisterScreen(navController: NavController) {
+fun RegisterScreenInternal(navController: NavController) {
+    val colorScheme = MaterialTheme.colorScheme
     var name by remember { mutableStateOf("") }
     var email by remember { mutableStateOf("") }
     var password by remember { mutableStateOf("") }
     var confirmPassword by remember { mutableStateOf("") }
+
+    val textFieldColors = OutlinedTextFieldDefaults.colors(
+        focusedTextColor = colorScheme.onBackground,
+        unfocusedTextColor = colorScheme.onBackground,
+        focusedBorderColor = colorScheme.secondary,
+        unfocusedBorderColor = colorScheme.onSurface,
+        cursorColor = colorScheme.primary,
+        focusedLabelColor = colorScheme.secondary,
+        unfocusedLabelColor = colorScheme.onSurface,
+    )
 
     Column(
         horizontalAlignment = Alignment.CenterHorizontally,
@@ -159,6 +214,7 @@ fun RegisterScreen(navController: NavController) {
             text = "Crear Cuenta",
             fontSize = 20.sp,
             fontWeight = FontWeight.Bold,
+            color = colorScheme.primary,
             modifier = Modifier.padding(bottom = 24.dp)
         )
 
@@ -168,7 +224,8 @@ fun RegisterScreen(navController: NavController) {
             label = { Text("Nombre completo") },
             modifier = Modifier
                 .fillMaxWidth()
-                .padding(bottom = 16.dp)
+                .padding(bottom = 16.dp),
+            colors = textFieldColors
         )
 
         OutlinedTextField(
@@ -177,7 +234,8 @@ fun RegisterScreen(navController: NavController) {
             label = { Text("Correo electrónico") },
             modifier = Modifier
                 .fillMaxWidth()
-                .padding(bottom = 16.dp)
+                .padding(bottom = 16.dp),
+            colors = textFieldColors
         )
 
         OutlinedTextField(
@@ -187,7 +245,8 @@ fun RegisterScreen(navController: NavController) {
             modifier = Modifier
                 .fillMaxWidth()
                 .padding(bottom = 16.dp),
-            visualTransformation = PasswordVisualTransformation()
+            visualTransformation = PasswordVisualTransformation(),
+            colors = textFieldColors
         )
 
         OutlinedTextField(
@@ -197,14 +256,17 @@ fun RegisterScreen(navController: NavController) {
             modifier = Modifier
                 .fillMaxWidth()
                 .padding(bottom = 24.dp),
-            visualTransformation = PasswordVisualTransformation()
+            visualTransformation = PasswordVisualTransformation(),
+            colors = textFieldColors
         )
 
         Button(
-            onClick = {
-                // Aquí iría la lógica de registro
-            },
-            modifier = Modifier.fillMaxWidth()
+            onClick = { /* Lógica de registro */ },
+            modifier = Modifier.fillMaxWidth(),
+            colors = ButtonDefaults.buttonColors(
+                containerColor = colorScheme.secondary,
+                contentColor = colorScheme.onSecondary
+            )
         ) {
             Text("Registrarse")
         }

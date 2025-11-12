@@ -29,6 +29,7 @@ import androidx.compose.material3.FilterChip
 import androidx.compose.material3.FilterChipDefaults
 import androidx.compose.material3.FloatingActionButton
 import androidx.compose.material3.Icon
+import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
@@ -39,7 +40,6 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
@@ -72,27 +72,27 @@ fun ProductoListScreen(
     productoViewModel: ProductoViewModel = viewModel(),
     carritoViewModel: CarritoViewModel = viewModel()
 ) {
+    val colorScheme = MaterialTheme.colorScheme
+
     val productos by productoViewModel.productos.collectAsState()
     val currentUser by userViewModel.currentUser.collectAsState()
     val isAdmin = currentUser?.correo?.endsWith("@admin.cl") == true
 
-    // filtro seleccionado
     var categoriaSeleccionada by remember { mutableStateOf("Todos") }
 
-    // aplicar filtro a la lista
     val productosFiltrados = remember(productos, categoriaSeleccionada) {
         if (categoriaSeleccionada == "Todos") productos
         else productos.filter { it.categoria == categoriaSeleccionada }
     }
 
     Scaffold(
-        containerColor = Color(0xFF121212),
+        containerColor = colorScheme.background,
         floatingActionButton = {
             if (isAdmin) {
                 FloatingActionButton(
                     onClick = { navController.navigate("agregarProducto") },
-                    containerColor = Color(0xFF39FF14),
-                    contentColor = Color.Black
+                    containerColor = colorScheme.secondary,
+                    contentColor = colorScheme.onSecondary
                 ) {
                     Icon(Icons.Filled.Add, contentDescription = "Agregar Producto")
                 }
@@ -104,9 +104,9 @@ fun ProductoListScreen(
             modifier = Modifier
                 .padding(padding)
                 .fillMaxSize()
+                .background(colorScheme.background)
         ) {
 
-            // --------- FILTROS ARRIBA ---------
             LazyRow(
                 modifier = Modifier
                     .fillMaxWidth()
@@ -122,13 +122,13 @@ fun ProductoListScreen(
                         label = {
                             Text(
                                 text = cat,
-                                color = if (seleccionado) Color.Black else Color.White,
+                                color = if (seleccionado) colorScheme.onSecondary else colorScheme.onBackground,
                                 fontSize = 12.sp
                             )
                         },
                         colors = FilterChipDefaults.filterChipColors(
-                            selectedContainerColor = Color(0xFF39FF14),
-                            containerColor = Color(0xFF2E2E2E)
+                            selectedContainerColor = colorScheme.secondary,
+                            containerColor = colorScheme.surface
                         )
                     )
                 }
@@ -141,11 +141,10 @@ fun ProductoListScreen(
                 ) {
                     Text(
                         text = "No hay productos para esta categoría",
-                        color = Color.White
+                        color = colorScheme.onBackground
                     )
                 }
             } else {
-                // --------- GRID COMO TENÍAS ---------
                 LazyVerticalGrid(
                     columns = GridCells.Fixed(2),
                     modifier = Modifier
@@ -179,6 +178,8 @@ fun ProductoCard(
     onDelete: () -> Unit,
     onAddToCart: () -> Unit
 ) {
+    val colorScheme = MaterialTheme.colorScheme
+
     Card(
         shape = RoundedCornerShape(12.dp),
         modifier = Modifier
@@ -186,7 +187,7 @@ fun ProductoCard(
             .height(240.dp)
             .clickable { navController.navigate("productoDetalle/${producto.id}") },
         colors = CardDefaults.cardColors(
-            containerColor = Color(0xFF2E2E2E)
+            containerColor = colorScheme.surface
         )
     ) {
         Column(
@@ -204,7 +205,7 @@ fun ProductoCard(
             Column(
                 modifier = Modifier
                     .fillMaxWidth()
-                    .background(Color(0xFF555555))
+                    .background(colorScheme.surface)
                     .padding(8.dp)
                     .weight(1f),
                 verticalArrangement = Arrangement.SpaceBetween
@@ -212,14 +213,14 @@ fun ProductoCard(
                 Column {
                     Text(
                         text = producto.nombre,
-                        color = Color(0xFF39FF14),
+                        color = colorScheme.secondary,
                         fontWeight = FontWeight.Bold,
                         fontSize = 14.sp,
                         maxLines = 2
                     )
                     Text(
                         text = "$${producto.precio}",
-                        color = Color(0xFF39FF14),
+                        color = colorScheme.secondary,
                         fontSize = 12.sp
                     )
                 }
@@ -231,27 +232,33 @@ fun ProductoCard(
                     ) {
                         Button(
                             onClick = onEdit,
-                            colors = ButtonDefaults.buttonColors(containerColor = Color.Yellow),
+                            colors = ButtonDefaults.buttonColors(
+                                containerColor = colorScheme.primary
+                            ),
                             modifier = Modifier.weight(1f)
                         ) {
-                            Text("Editar", color = Color.Black, fontSize = 12.sp)
+                            Text("Editar", color = colorScheme.onPrimary, fontSize = 12.sp)
                         }
                         Spacer(modifier = Modifier.width(6.dp))
                         Button(
                             onClick = onDelete,
-                            colors = ButtonDefaults.buttonColors(containerColor = Color.Red),
+                            colors = ButtonDefaults.buttonColors(
+                                containerColor = colorScheme.error
+                            ),
                             modifier = Modifier.weight(1f)
                         ) {
-                            Text("Eliminar", color = Color.White, fontSize = 12.sp)
+                            Text("Eliminar", color = colorScheme.onError, fontSize = 12.sp)
                         }
                     }
                 } else {
                     Button(
                         onClick = onAddToCart,
-                        colors = ButtonDefaults.buttonColors(containerColor = Color(0xFF6B5BFF)),
+                        colors = ButtonDefaults.buttonColors(
+                            containerColor = colorScheme.primary
+                        ),
                         modifier = Modifier.fillMaxWidth()
                     ) {
-                        Text("Agregar al carrito", fontSize = 12.sp)
+                        Text("Agregar al carrito", color = colorScheme.onPrimary, fontSize = 12.sp)
                     }
                 }
             }
