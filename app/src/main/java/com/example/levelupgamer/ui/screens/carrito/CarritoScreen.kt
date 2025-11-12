@@ -1,10 +1,12 @@
 package com.example.levelupgamer.ui.screens.carrito
 
+import android.annotation.SuppressLint
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.automirrored.filled.ArrowBack
 import androidx.compose.material.icons.filled.ArrowBack
 import androidx.compose.material.icons.filled.Delete
 import androidx.compose.material.icons.filled.ShoppingCart
@@ -22,6 +24,7 @@ import com.example.levelupgamer.viewmodel.CarritoViewModel
 import com.example.levelupgamer.viewmodel.UserViewModel
 import kotlinx.coroutines.launch
 
+@SuppressLint("DefaultLocale")
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun CarritoScreen(navController: NavController, userViewModel: UserViewModel) {
@@ -52,7 +55,7 @@ fun CarritoScreen(navController: NavController, userViewModel: UserViewModel) {
                 navigationIcon = {
                     IconButton(onClick = { navController.popBackStack() }) {
                         Icon(
-                            Icons.Default.ArrowBack,
+                            Icons.AutoMirrored.Filled.ArrowBack,
                             contentDescription = "Regresar",
                             tint = colorScheme.secondary
                         )
