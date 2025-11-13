@@ -22,6 +22,7 @@ import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavController
 import com.example.levelupgamer.R // Asegúrate de importar tu R
 import com.example.levelupgamer.data.model.Producto
+import com.example.levelupgamer.viewmodel.ProductoViewModel
 import com.example.levelupgamer.viewmodel.UserViewModel
 
 data class Evento(
@@ -40,7 +41,7 @@ val eventosDeEjemplo = listOf(
 @Composable
 fun HomeScreen(
     navController: NavController,
-    productoViewModel: UserViewModel = viewModel()
+    productoViewModel: ProductoViewModel = viewModel()
 ) {
     val colorScheme = MaterialTheme.colorScheme
 

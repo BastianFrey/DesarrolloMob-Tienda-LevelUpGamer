@@ -52,7 +52,7 @@ fun AppNavigation() {
         composable(
             "home",
             deepLinks = listOf(navDeepLink { uriPattern = "levelupgamer://inicio" })
-        ) { MainLayout(navController = navController, title = "Bienvenido") { HomeScreen(navController, userViewModel) } }
+        ) { MainLayout(navController = navController, title = "Bienvenido") { HomeScreen(navController, productoViewModel) } }
         composable("productos") {
             MainLayout(
                 navController = navController,
