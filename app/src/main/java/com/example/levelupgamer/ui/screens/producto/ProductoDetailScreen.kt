@@ -43,9 +43,11 @@ fun ProductoDetailScreen(navController: NavController, productoId: Int) {
 
     val producto = productos.find { it.id == productoId }
 
-    val resenas by resenaViewModel.getResenasForProducto(productoId).collectAsState(initial = emptyList())
-    val promedioCalificacion by resenaViewModel.getAverageRating(productoId).collectAsState(initial = 0.0)
 
+    val resenas by resenaViewModel.getResenasForProducto(productoId).collectAsState(initial = emptyList())
+
+    val promedioCalificacionNullable by resenaViewModel.promedio(productoId).collectAsState(initial = null)
+    val promedioCalificacion = promedioCalificacionNullable ?: 0.0
 
     var showReviewModal by remember { mutableStateOf(false) }
 
@@ -112,7 +114,7 @@ fun ProductoDetailScreen(navController: NavController, productoId: Int) {
                         Button(
                             onClick = { navController.popBackStack() },
                             colors = ButtonDefaults.buttonColors(
-                                containerColor = colorScheme.primary, // Azul Eléctrico
+                                containerColor = colorScheme.primary,
                                 contentColor = colorScheme.onPrimary
                             ),
                             modifier = Modifier.weight(1f).padding(end = 8.dp)

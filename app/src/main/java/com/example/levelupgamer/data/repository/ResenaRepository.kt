@@ -11,5 +11,5 @@ class ResenaRepository(private val resenaDao: ResenaDao) {
 
     suspend fun insert(resena: Resena) = resenaDao.insert(resena)
 
-    fun getAverageRating(productoId: Int): Flow<Double> = resenaDao.getAverageRating(productoId)
+    fun promedio(productoId: Int): Flow<Double?> = resenaDao.getAverageRating(productoId)
 }

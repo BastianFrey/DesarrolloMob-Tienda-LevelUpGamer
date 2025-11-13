@@ -19,5 +19,5 @@ interface ResenaDao {
 
 
     @Query("SELECT AVG(calificacion) FROM resenas WHERE productoId = :productoId")
-    fun getAverageRating(productoId: Int): Flow<Double>
+    fun promedio(productoId: Int): Flow<Double?>
 }

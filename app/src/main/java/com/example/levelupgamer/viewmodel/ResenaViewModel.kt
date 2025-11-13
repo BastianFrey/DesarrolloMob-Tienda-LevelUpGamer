@@ -22,7 +22,7 @@ class ResenaViewModel(application: Application) : AndroidViewModel(application) 
         return repository.getResenasForProducto(productoId)
     }
 
-    fun getAverageRating(productoId: Int): Flow<Double> {
+    fun promedio(productoId: Int): Flow<Double?> {
         return repository.getAverageRating(productoId)
     }
 
