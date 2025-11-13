@@ -12,6 +12,7 @@ import androidx.compose.material3.*
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
+import androidx.compose.ui.Alignment // <-- 1. ASEGÚRATE DE IMPORTAR ESTO
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.res.painterResource
@@ -20,11 +21,12 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavController
-import com.example.levelupgamer.R // Asegúrate de importar tu R
+import com.example.levelupgamer.R
 import com.example.levelupgamer.data.model.Producto
 import com.example.levelupgamer.viewmodel.ProductoViewModel
-import com.example.levelupgamer.viewmodel.UserViewModel
+import com.example.levelupgamer.viewmodel.UserViewModel // <-- 2. IMPORTAMOS EL USERVIEWMODEL
 
+// (data class Evento y lista de ejemplos se quedan igual)
 data class Evento(
     val id: Int,
     val titulo: String,
@@ -41,11 +43,15 @@ val eventosDeEjemplo = listOf(
 @Composable
 fun HomeScreen(
     navController: NavController,
-    productoViewModel: ProductoViewModel = viewModel()
+    productoViewModel: ProductoViewModel = viewModel(),
+    userViewModel: UserViewModel = viewModel()
 ) {
     val colorScheme = MaterialTheme.colorScheme
 
     val productos by productoViewModel.productosFiltrados.collectAsState()
+
+    val currentUser by userViewModel.currentUser.collectAsState()
+    val nombreUsuario = currentUser?.nombre ?: "Gamer"
 
     LazyColumn(
         modifier = Modifier
@@ -55,7 +61,7 @@ fun HomeScreen(
         verticalArrangement = Arrangement.spacedBy(16.dp)
     ) {
         item {
-            Header(navController = navController)
+            Header(navController = navController, nombreUsuario = nombreUsuario)
         }
 
         item {
@@ -73,23 +79,35 @@ fun HomeScreen(
 }
 
 @Composable
-fun Header(navController: NavController) {
-    Row(
+fun Header(navController: NavController, nombreUsuario: String) {
+
+    // --- 7. AÑADIMOS LA LÍNEA QUE FALTABA ---
+    val colorScheme = MaterialTheme.colorScheme
+
+    // --- 8. CAMBIAMOS DE ROW A COLUMN ---
+    Column(
         modifier = Modifier
             .fillMaxWidth()
             .padding(horizontal = 16.dp, vertical = 8.dp),
-        horizontalArrangement = Arrangement.SpaceBetween,
-        verticalAlignment = androidx.compose.ui.Alignment.CenterVertically
+        horizontalAlignment = Alignment.CenterHorizontally
     ) {
-        // Aquí podrías poner tu logo si quisieras
+        Image(
+            painter = painterResource(id = R.drawable.logo),
+            contentDescription = "Logo LevelUp Gamer",
+            modifier = Modifier.height(60.dp),
+            contentScale = ContentScale.Fit
+        )
+
+        Spacer(modifier = Modifier.height(8.dp))
+
         Text(
-            text = "Inicio",
-            style = MaterialTheme.typography.headlineLarge,
-            color = MaterialTheme.colorScheme.primary,
-            fontWeight = FontWeight.Bold
+            text = "Bienvenido, $nombreUsuario",
+            style = MaterialTheme.typography.titleMedium,
+            color = colorScheme.secondary
         )
     }
 }
+
 
 @Composable
 fun SeccionEventos(navController: NavController, colorScheme: ColorScheme) {
