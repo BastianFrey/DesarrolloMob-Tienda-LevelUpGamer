@@ -21,6 +21,7 @@ import androidx.compose.foundation.lazy.grid.items
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Add
+import androidx.compose.material.icons.filled.Search
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.Card
@@ -30,14 +31,13 @@ import androidx.compose.material3.FilterChipDefaults
 import androidx.compose.material3.FloatingActionButton
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
+import androidx.compose.material3.TextFieldDefaults
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.remember
-import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.layout.ContentScale
@@ -74,16 +74,13 @@ fun ProductoListScreen(
 ) {
     val colorScheme = MaterialTheme.colorScheme
 
-    val productos by productoViewModel.productos.collectAsState()
     val currentUser by userViewModel.currentUser.collectAsState()
     val isAdmin = currentUser?.correo?.endsWith("@admin.cl") == true
 
-    var categoriaSeleccionada by remember { mutableStateOf("Todos") }
+    val searchText by productoViewModel.searchText.collectAsState()
+    val categoriaSeleccionada by productoViewModel.selectedCategory.collectAsState()
 
-    val productosFiltrados = remember(productos, categoriaSeleccionada) {
-        if (categoriaSeleccionada == "Todos") productos
-        else productos.filter { it.categoria == categoriaSeleccionada }
-    }
+    val productosFiltrados by productoViewModel.productosFiltrados.collectAsState()
 
     Scaffold(
         containerColor = colorScheme.background,
@@ -107,18 +104,37 @@ fun ProductoListScreen(
                 .background(colorScheme.background)
         ) {
 
+            OutlinedTextField(
+                value = searchText,
+                onValueChange = productoViewModel::onSearchTextChange,
+                label = { Text("Buscar producto...") },
+                leadingIcon = { Icon(Icons.Default.Search, contentDescription = "Buscar") },
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(horizontal = 16.dp, vertical = 8.dp),
+                shape = RoundedCornerShape(16.dp),
+                colors = TextFieldDefaults.colors(
+                    focusedContainerColor = colorScheme.surface,
+                    unfocusedContainerColor = colorScheme.surface,
+                    disabledContainerColor = colorScheme.surface,
+                    focusedIndicatorColor = colorScheme.primary,
+                    unfocusedIndicatorColor = colorScheme.surface
+                )
+            )
+
             LazyRow(
                 modifier = Modifier
                     .fillMaxWidth()
                     .padding(vertical = 6.dp, horizontal = 6.dp),
-                horizontalArrangement = Arrangement.spacedBy(8.dp)
+                horizontalArrangement = Arrangement.spacedBy(8.dp),
+                contentPadding = PaddingValues(horizontal = 10.dp)
             ) {
                 items(categoriasCaso.size) { index ->
                     val cat = categoriasCaso[index]
-                    val seleccionado = cat == categoriaSeleccionada
+                    val seleccionado = (cat == categoriaSeleccionada)
                     FilterChip(
                         selected = seleccionado,
-                        onClick = { categoriaSeleccionada = cat },
+                        onClick = { productoViewModel.onCategorySelected(cat) },
                         label = {
                             Text(
                                 text = cat,
@@ -140,15 +156,14 @@ fun ProductoListScreen(
                     contentAlignment = Alignment.Center
                 ) {
                     Text(
-                        text = "No hay productos para esta categoría",
+                        text = "No se encontraron productos",
                         color = colorScheme.onBackground
                     )
                 }
             } else {
                 LazyVerticalGrid(
                     columns = GridCells.Fixed(2),
-                    modifier = Modifier
-                        .fillMaxSize(),
+                    modifier = Modifier.fillMaxSize(),
                     contentPadding = PaddingValues(8.dp),
                     verticalArrangement = Arrangement.spacedBy(8.dp),
                     horizontalArrangement = Arrangement.spacedBy(8.dp)
