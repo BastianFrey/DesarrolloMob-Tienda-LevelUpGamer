@@ -23,7 +23,7 @@ class ResenaViewModel(application: Application) : AndroidViewModel(application) 
     }
 
     fun promedio(productoId: Int): Flow<Double?> {
-        return repository.getAverageRating(productoId)
+        return repository.promedio(productoId)
     }
 
     fun agregarResena(productoId: Int, userId: Int, userName: String, calificacion: Int, comentario: String) {
