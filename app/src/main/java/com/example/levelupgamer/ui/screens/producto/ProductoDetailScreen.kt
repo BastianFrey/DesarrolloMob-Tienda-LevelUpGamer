@@ -38,12 +38,12 @@ fun ProductoDetailScreen(navController: NavController, productoId: Int) {
     val resenaViewModel: ResenaViewModel = viewModel()
     val userViewModel: UserViewModel = viewModel()
 
-    val productos by productoViewModel.productos.collectAsState()
     val currentUser by userViewModel.currentUser.collectAsState()
 
-    val producto = productos.find { it.id == productoId }
 
+    val productoState by productoViewModel.getProducto(productoId).collectAsState(initial = null)
 
+    val producto = productoState
     val resenas by resenaViewModel.getResenasForProducto(productoId).collectAsState(initial = emptyList())
 
     val promedioCalificacionNullable by resenaViewModel.promedio(productoId).collectAsState(initial = null)
@@ -60,7 +60,7 @@ fun ProductoDetailScreen(navController: NavController, productoId: Int) {
     ) {
         if (producto == null) {
             Text(
-                "Producto no encontrado",
+                "Cargando producto...",
                 color = colorScheme.secondary,
                 fontFamily = FontFamily.Default,
                 style = MaterialTheme.typography.headlineMedium
@@ -83,19 +83,19 @@ fun ProductoDetailScreen(navController: NavController, productoId: Int) {
                             horizontalAlignment = Alignment.CenterHorizontally
                         ) {
                             Text(
-                                producto.nombre,
+                                producto.nombre, // <-- ESTO YA NO DARÁ ERROR
                                 style = MaterialTheme.typography.headlineLarge,
                                 color = colorScheme.secondary
                             )
                             Spacer(modifier = Modifier.height(8.dp))
                             Text(
-                                producto.descripcion,
+                                producto.descripcion, // <-- ESTO YA NO DARÁ ERROR
                                 style = MaterialTheme.typography.bodyLarge,
                                 color = colorScheme.onBackground
                             )
                             Spacer(modifier = Modifier.height(12.dp))
                             Text(
-                                "Precio: $${producto.precio}",
+                                "Precio: $${producto.precio}", // <-- ESTO YA NO DARÁ ERROR
                                 style = MaterialTheme.typography.titleMedium,
                                 color = colorScheme.secondary
                             )
