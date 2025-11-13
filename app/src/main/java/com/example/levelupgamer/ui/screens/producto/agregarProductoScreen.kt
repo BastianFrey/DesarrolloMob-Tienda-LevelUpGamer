@@ -1,6 +1,5 @@
 package com.example.levelupgamer.ui.screens.producto
 
-
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.*
 import androidx.compose.material3.*
@@ -13,6 +12,18 @@ import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavController
 import com.example.levelupgamer.viewmodel.ProductoViewModel
 
+private val categoriasParaAgregar = listOf(
+    "Juegos de Mesa",
+    "Accesorios",
+    "Consolas",
+    "Computadores Gamers",
+    "Sillas Gamers",
+    "Mouse",
+    "Mousepad",
+    "Poleras gamers"
+)
+
+@OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun AgregarProductoScreen(navController: NavController, vm: ProductoViewModel = viewModel()) {
     val colorScheme = MaterialTheme.colorScheme
@@ -21,6 +32,17 @@ fun AgregarProductoScreen(navController: NavController, vm: ProductoViewModel = 
     var descripcion by remember { mutableStateOf("") }
     var precio by remember { mutableStateOf("") }
     var error by remember { mutableStateOf("") }
+
+    var categoriaSeleccionada by remember { mutableStateOf("") }
+    var expanded by remember { mutableStateOf(false) }
+
+    val textFieldColors = OutlinedTextFieldDefaults.colors(
+        focusedTextColor = colorScheme.onBackground,
+        unfocusedTextColor = colorScheme.onBackground,
+        focusedBorderColor = colorScheme.secondary,
+        unfocusedBorderColor = colorScheme.onSurface,
+        cursorColor = colorScheme.primary
+    )
 
     Column(
         modifier = Modifier
@@ -39,57 +61,73 @@ fun AgregarProductoScreen(navController: NavController, vm: ProductoViewModel = 
 
         Spacer(modifier = Modifier.height(24.dp))
 
-        // --- Nombre ---
+        // Nombre
         OutlinedTextField(
             value = nombre,
             onValueChange = { nombre = it },
             label = { Text("Nombre", color = colorScheme.secondary) },
-            textStyle = LocalTextStyle.current.copy(color = colorScheme.onBackground),
             modifier = Modifier.fillMaxWidth(),
-            colors = OutlinedTextFieldDefaults.colors(
-                focusedTextColor = colorScheme.onBackground,
-                unfocusedTextColor = colorScheme.onBackground,
-                focusedBorderColor = colorScheme.secondary, // Borde activo: NeonGreen
-                unfocusedBorderColor = colorScheme.onSurface, // Borde inactivo: LightGrey
-                cursorColor = colorScheme.primary // Cursor: ElectricBlue
-            )
+            colors = textFieldColors
         )
 
-        // --- Descripción ---
+        // Descripción
         OutlinedTextField(
             value = descripcion,
             onValueChange = { descripcion = it },
             label = { Text("Descripción", color = colorScheme.secondary) },
-            textStyle = LocalTextStyle.current.copy(color = colorScheme.onBackground),
             modifier = Modifier
                 .fillMaxWidth()
                 .padding(top = 16.dp),
-            colors = OutlinedTextFieldDefaults.colors(
-                focusedTextColor = colorScheme.onBackground,
-                unfocusedTextColor = colorScheme.onBackground,
-                focusedBorderColor = colorScheme.secondary,
-                unfocusedBorderColor = colorScheme.onSurface,
-                cursorColor = colorScheme.primary
-            )
+            colors = textFieldColors
         )
 
-        // --- Precio ---
+        // Precio
         OutlinedTextField(
             value = precio,
             onValueChange = { precio = it },
             label = { Text("Precio", color = colorScheme.secondary) },
-            textStyle = LocalTextStyle.current.copy(color = colorScheme.onBackground),
             modifier = Modifier
                 .fillMaxWidth()
                 .padding(top = 16.dp),
-            colors = OutlinedTextFieldDefaults.colors(
-                focusedTextColor = colorScheme.onBackground,
-                unfocusedTextColor = colorScheme.onBackground,
-                focusedBorderColor = colorScheme.secondary,
-                unfocusedBorderColor = colorScheme.onSurface,
-                cursorColor = colorScheme.primary
-            )
+            colors = textFieldColors
         )
+
+        // MENÚ DE CATEGORÍA
+        Spacer(modifier = Modifier.height(16.dp))
+        ExposedDropdownMenuBox(
+            expanded = expanded,
+            onExpandedChange = { expanded = !expanded },
+            modifier = Modifier.fillMaxWidth()
+        ) {
+            OutlinedTextField(
+                value = categoriaSeleccionada,
+                onValueChange = {},
+                readOnly = true,
+                label = { Text("Categoría", color = colorScheme.secondary) },
+                trailingIcon = {
+                    ExposedDropdownMenuDefaults.TrailingIcon(expanded = expanded)
+                },
+                colors = textFieldColors,
+                modifier = Modifier
+                    .menuAnchor()
+                    .fillMaxWidth()
+            )
+
+            ExposedDropdownMenu(
+                expanded = expanded,
+                onDismissRequest = { expanded = false }
+            ) {
+                categoriasParaAgregar.forEach { categoria ->
+                    DropdownMenuItem(
+                        text = { Text(categoria) },
+                        onClick = {
+                            categoriaSeleccionada = categoria
+                            expanded = false
+                        }
+                    )
+                }
+            }
+        }
 
         if (error.isNotEmpty()) {
             Text(
@@ -104,11 +142,12 @@ fun AgregarProductoScreen(navController: NavController, vm: ProductoViewModel = 
         Button(
             onClick = {
                 val precioDouble = precio.toDoubleOrNull()
-                if (nombre.isBlank() || descripcion.isBlank() || precioDouble == null) {
+                if (nombre.isBlank() || descripcion.isBlank() || precioDouble == null || categoriaSeleccionada.isBlank()) {
                     error = "Completa todos los campos correctamente"
                     return@Button
                 }
-                vm.agregarProducto(nombre, descripcion, precioDouble)
+
+                vm.agregarProducto(nombre, descripcion, precioDouble, categoriaSeleccionada)
                 navController.popBackStack()
             },
             colors = ButtonDefaults.buttonColors(
