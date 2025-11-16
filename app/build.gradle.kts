@@ -2,7 +2,7 @@ plugins {
     alias(libs.plugins.android.application)
     alias(libs.plugins.kotlin.android)
     alias(libs.plugins.kotlin.compose)
-    kotlin("kapt")
+    alias(libs.plugins.ksp)
 }
 
 android {
@@ -64,7 +64,7 @@ dependencies {
     debugImplementation(libs.androidx.ui.test.manifest)
     // Room
     implementation("androidx.room:room-runtime:2.6.1")  // Versión actualizada
-    kapt("androidx.room:room-compiler:2.6.1")          // Misma versión
+    kapt("androidx.room:room-compiler:2.6.1")
     implementation("androidx.room:room-ktx:2.6.1")
 
     // ZXing QR Code Scanner
@@ -76,3 +76,4 @@ dependencies {
     implementation("com.squareup.okhttp3:logging-interceptor:4.9.3") // Para ver los logs de red (muy útil)
 
 }
+
