@@ -115,7 +115,8 @@ fun AgregarProductoScreen(navController: NavController, vm: ProductoViewModel = 
 
             ExposedDropdownMenu(
                 expanded = expanded,
-                onDismissRequest = { expanded = false }
+                onDismissRequest = { expanded = false },
+                modifier = Modifier.background(colorScheme.surface)
             ) {
                 categoriasParaAgregar.forEach { categoria ->
                     DropdownMenuItem(
@@ -123,7 +124,10 @@ fun AgregarProductoScreen(navController: NavController, vm: ProductoViewModel = 
                         onClick = {
                             categoriaSeleccionada = categoria
                             expanded = false
-                        }
+                        },
+                        colors = MenuDefaults.itemColors(
+                            textColor = colorScheme.onSurface
+                        )
                     )
                 }
             }
