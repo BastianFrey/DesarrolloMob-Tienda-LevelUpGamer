@@ -40,7 +40,6 @@ class LoginViewModel(
 
         viewModelScope.launch(Dispatchers.IO) { // Usamos IO para la llamada de red
             _uiState.value = state.copy(isLoading = true, error = null)
-            delay(500)
 
             val result = authRepository.login(state.correo, state.password)
 
