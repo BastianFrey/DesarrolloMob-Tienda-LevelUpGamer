@@ -93,7 +93,14 @@ fun AppNavigation() {
             arguments = listOf(navArgument("id") { type = NavType.IntType })
         ) { backStackEntry ->
             val id = backStackEntry.arguments?.getInt("id") ?: 0
-            MainLayout(navController = navController, title = "Detalle del Producto") { ProductoDetailScreen(navController, id) }
+            MainLayout(navController = navController, title = "Detalle del Producto") {
+                // AQUÍ ESTÁ EL CAMBIO:
+                ProductoDetailScreen(
+                    navController = navController,
+                    productoId = id,
+                    userViewModel = userViewModel
+                )
+            }
         }
 
         composable(

@@ -30,13 +30,16 @@ import java.util.Date
 import java.util.Locale
 
 @Composable
-fun ProductoDetailScreen(navController: NavController, productoId: Int) {
+fun ProductoDetailScreen(
+    navController: NavController,
+    productoId: Int,
+    userViewModel: UserViewModel
+) {
     val colorScheme = MaterialTheme.colorScheme
     val context = LocalContext.current
 
     val productoViewModel: ProductoViewModel = viewModel()
     val resenaViewModel: ResenaViewModel = viewModel()
-    val userViewModel: UserViewModel = viewModel()
 
     val currentUser by userViewModel.currentUser.collectAsState()
 
@@ -83,19 +86,19 @@ fun ProductoDetailScreen(navController: NavController, productoId: Int) {
                             horizontalAlignment = Alignment.CenterHorizontally
                         ) {
                             Text(
-                                producto.nombre, // <-- ESTO YA NO DARÁ ERROR
+                                producto.nombre,
                                 style = MaterialTheme.typography.headlineLarge,
                                 color = colorScheme.secondary
                             )
                             Spacer(modifier = Modifier.height(8.dp))
                             Text(
-                                producto.descripcion, // <-- ESTO YA NO DARÁ ERROR
+                                producto.descripcion,
                                 style = MaterialTheme.typography.bodyLarge,
                                 color = colorScheme.onBackground
                             )
                             Spacer(modifier = Modifier.height(12.dp))
                             Text(
-                                "Precio: $${producto.precio}", // <-- ESTO YA NO DARÁ ERROR
+                                "Precio: $${producto.precio}",
                                 style = MaterialTheme.typography.titleMedium,
                                 color = colorScheme.secondary
                             )
@@ -124,7 +127,7 @@ fun ProductoDetailScreen(navController: NavController, productoId: Int) {
 
                         Button(
                             onClick = {
-                                if (currentUser != null) {
+                                if (currentUser != null) { // <-- Esto ahora funcionará
                                     showReviewModal = true
                                 } else {
                                     Toast.makeText(
