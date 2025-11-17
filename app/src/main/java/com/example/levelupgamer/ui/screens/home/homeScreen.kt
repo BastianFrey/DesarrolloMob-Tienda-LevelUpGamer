@@ -81,10 +81,8 @@ fun HomeScreen(
 @Composable
 fun Header(navController: NavController, nombreUsuario: String) {
 
-    // --- 7. AÑADIMOS LA LÍNEA QUE FALTABA ---
     val colorScheme = MaterialTheme.colorScheme
 
-    // --- 8. CAMBIAMOS DE ROW A COLUMN ---
     Column(
         modifier = Modifier
             .fillMaxWidth()
@@ -126,7 +124,6 @@ fun SeccionEventos(navController: NavController, colorScheme: ColorScheme) {
         ) {
             items(eventosDeEjemplo) { evento ->
                 EventoCard(evento = evento, colorScheme = colorScheme, onClick = {
-                    // Aquí podrías navegar a una pantalla de detalle de evento
                 })
             }
         }
