@@ -94,7 +94,6 @@ fun AppNavigation() {
         ) { backStackEntry ->
             val id = backStackEntry.arguments?.getInt("id") ?: 0
             MainLayout(navController = navController, title = "Detalle del Producto") {
-                // AQUÍ ESTÁ EL CAMBIO:
                 ProductoDetailScreen(
                     navController = navController,
                     productoId = id,
