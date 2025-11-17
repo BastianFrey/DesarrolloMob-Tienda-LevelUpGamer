@@ -127,7 +127,7 @@ fun ProductoDetailScreen(
 
                         Button(
                             onClick = {
-                                if (currentUser != null) { // <-- Esto ahora funcionará
+                                if (currentUser != null) {
                                     showReviewModal = true
                                 } else {
                                     Toast.makeText(
