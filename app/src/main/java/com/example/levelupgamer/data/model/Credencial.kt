@@ -1,5 +1,6 @@
 package com.example.levelupgamer.data.model
 
+
 data class Credential(
     val username: String,
     val password: String
