@@ -9,10 +9,8 @@ import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Star
-// ⬇️ Nueva importación para Scaffold y Snackbar
 import androidx.compose.material.icons.automirrored.filled.ArrowBack
 import androidx.compose.material3.*
-// ⬆️ Fin nueva importación
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -107,6 +105,7 @@ fun ProductoDetailScreen(
                     horizontalAlignment = Alignment.CenterHorizontally
                 ) {
                     item {
+                        // DETALLE DE PRODUCTO
                         Card(
                             modifier = Modifier
                                 .fillMaxWidth()
@@ -140,20 +139,27 @@ fun ProductoDetailScreen(
                             }
                         }
 
+                        // BOTONES DE ACCIÓN
                         Row(
                             modifier = Modifier.fillMaxWidth().padding(bottom = 16.dp),
                             horizontalArrangement = Arrangement.SpaceBetween,
                             verticalAlignment = Alignment.CenterVertically
                         ) {
+                            // ⬇️ BOTÓN AGREGAR AL CARRITO CON SNACKBAR Y NAVEGACIÓN
                             Button(
                                 onClick = {
                                     carritoViewModel.agregarAlCarrito(producto)
+                                    // ⬇️ LÓGICA SNACKBAR: Espera el resultado de la acción
                                     scope.launch {
-                                        snackbarHostState.showSnackbar(
-                                            message = "${producto.nombre} agregado al carrito!",
+                                        val result = snackbarHostState.showSnackbar(
+                                            message = "Se agregó ${producto.nombre} al carrito", // MENSAJE SOLICITADO
                                             actionLabel = "Ver Carrito",
                                             duration = SnackbarDuration.Short
                                         )
+                                        // ⬇️ NAVEGACIÓN AL CLIC EN LA ACCIÓN
+                                        if (result == SnackbarResult.ActionPerformed) {
+                                            navController.navigate("carrito")
+                                        }
                                     }
                                 },
                                 colors = ButtonDefaults.buttonColors(
@@ -187,6 +193,7 @@ fun ProductoDetailScreen(
                         }
                     }
 
+                    // RESEÑAS
                     item {
                         Text(
                             "Reseñas de la Comunidad (${resenas.size})",
