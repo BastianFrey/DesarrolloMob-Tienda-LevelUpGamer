@@ -9,7 +9,10 @@ import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Star
+// ⬇️ Nueva importación para Scaffold y Snackbar
+import androidx.compose.material.icons.automirrored.filled.ArrowBack
 import androidx.compose.material3.*
+// ⬆️ Fin nueva importación
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -22,16 +25,16 @@ import androidx.compose.ui.unit.sp
 import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavController
 import com.example.levelupgamer.data.model.Resena
-// ⬇️ NUEVA IMPORTACIÓN DEL CARRO
 import com.example.levelupgamer.viewmodel.CarritoViewModel
-// ⬆️ FIN NUEVA IMPORTACIÓN
 import com.example.levelupgamer.viewmodel.ProductoViewModel
 import com.example.levelupgamer.viewmodel.ResenaViewModel
 import com.example.levelupgamer.viewmodel.UserViewModel
+import kotlinx.coroutines.launch
 import java.text.SimpleDateFormat
 import java.util.Date
 import java.util.Locale
 
+@OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun ProductoDetailScreen(
     navController: NavController,
@@ -58,124 +61,152 @@ fun ProductoDetailScreen(
 
     var showReviewModal by remember { mutableStateOf(false) }
 
-    Box(
-        modifier = Modifier
-            .fillMaxSize()
-            .background(colorScheme.background)
-            .padding(16.dp),
-        contentAlignment = Alignment.Center
-    ) {
-        if (producto == null) {
-            Text(
-                "Cargando producto...",
-                color = colorScheme.secondary,
-                fontFamily = FontFamily.Default,
-                style = MaterialTheme.typography.headlineMedium
+    val snackbarHostState = remember { SnackbarHostState() }
+    val scope = rememberCoroutineScope()
+
+
+    Scaffold(
+        snackbarHost = { SnackbarHost(snackbarHostState) },
+        topBar = {
+            TopAppBar(
+                title = { Text(producto?.nombre ?: "Detalle del Producto", color = colorScheme.secondary) },
+                navigationIcon = {
+                    IconButton(onClick = { navController.popBackStack() }) {
+                        Icon(
+                            Icons.AutoMirrored.Filled.ArrowBack,
+                            contentDescription = "Volver",
+                            tint = colorScheme.secondary
+                        )
+                    }
+                },
+                colors = TopAppBarDefaults.topAppBarColors(
+                    containerColor = colorScheme.background
+                )
             )
-        } else {
-            LazyColumn(
-                modifier = Modifier.fillMaxSize(),
-                horizontalAlignment = Alignment.CenterHorizontally
-            ) {
-                item {
-                    // DETALLE DE PRODUCTO
-                    Card(
-                        modifier = Modifier
-                            .fillMaxWidth()
-                            .padding(bottom = 16.dp),
-                        colors = CardDefaults.cardColors(containerColor = colorScheme.surface)
-                    ) {
-                        Column(
-                            modifier = Modifier.padding(24.dp),
-                            horizontalAlignment = Alignment.CenterHorizontally
-                        ) {
-                            Text(
-                                producto.nombre,
-                                style = MaterialTheme.typography.headlineLarge,
-                                color = colorScheme.secondary
-                            )
-                            Spacer(modifier = Modifier.height(8.dp))
-                            Text(
-                                producto.descripcion,
-                                style = MaterialTheme.typography.bodyLarge,
-                                color = colorScheme.onBackground
-                            )
-                            Spacer(modifier = Modifier.height(12.dp))
-                            Text(
-                                "Precio: $${producto.precio}",
-                                style = MaterialTheme.typography.titleMedium,
-                                color = colorScheme.secondary
-                            )
+        },
+        containerColor = colorScheme.background
+    ) { innerPadding ->
 
-                            Spacer(modifier = Modifier.height(12.dp))
-                            RatingDisplay(promedio = promedioCalificacion, totalResenas = resenas.size)
+        Box(
+            modifier = Modifier
+                .fillMaxSize()
+                .padding(innerPadding)
+                .padding(horizontal = 16.dp),
+            contentAlignment = Alignment.Center
+        ) {
+            if (producto == null) {
+                Text(
+                    "Cargando producto...",
+                    color = colorScheme.secondary,
+                    fontFamily = FontFamily.Default,
+                    style = MaterialTheme.typography.headlineMedium
+                )
+            } else {
+                LazyColumn(
+                    modifier = Modifier.fillMaxSize(),
+                    horizontalAlignment = Alignment.CenterHorizontally
+                ) {
+                    item {
+                        Card(
+                            modifier = Modifier
+                                .fillMaxWidth()
+                                .padding(bottom = 16.dp),
+                            colors = CardDefaults.cardColors(containerColor = colorScheme.surface)
+                        ) {
+                            Column(
+                                modifier = Modifier.padding(24.dp),
+                                horizontalAlignment = Alignment.CenterHorizontally
+                            ) {
+                                Text(
+                                    producto.nombre,
+                                    style = MaterialTheme.typography.headlineLarge,
+                                    color = colorScheme.secondary
+                                )
+                                Spacer(modifier = Modifier.height(8.dp))
+                                Text(
+                                    producto.descripcion,
+                                    style = MaterialTheme.typography.bodyLarge,
+                                    color = colorScheme.onBackground
+                                )
+                                Spacer(modifier = Modifier.height(12.dp))
+                                Text(
+                                    "Precio: $${producto.precio}",
+                                    style = MaterialTheme.typography.titleMedium,
+                                    color = colorScheme.secondary
+                                )
+
+                                Spacer(modifier = Modifier.height(12.dp))
+                                RatingDisplay(promedio = promedioCalificacion, totalResenas = resenas.size)
+                            }
+                        }
+
+                        Row(
+                            modifier = Modifier.fillMaxWidth().padding(bottom = 16.dp),
+                            horizontalArrangement = Arrangement.SpaceBetween,
+                            verticalAlignment = Alignment.CenterVertically
+                        ) {
+                            Button(
+                                onClick = {
+                                    carritoViewModel.agregarAlCarrito(producto)
+                                    scope.launch {
+                                        snackbarHostState.showSnackbar(
+                                            message = "${producto.nombre} agregado al carrito!",
+                                            actionLabel = "Ver Carrito",
+                                            duration = SnackbarDuration.Short
+                                        )
+                                    }
+                                },
+                                colors = ButtonDefaults.buttonColors(
+                                    containerColor = colorScheme.primary,
+                                    contentColor = colorScheme.onPrimary
+                                ),
+                                modifier = Modifier.weight(1f).padding(end = 8.dp)
+                            ) {
+                                Text("Agregar al Carrito")
+                            }
+
+                            Button(
+                                onClick = {
+                                    if (currentUser != null) {
+                                        showReviewModal = true
+                                    } else {
+                                        Toast.makeText(
+                                            context,
+                                            "Debes iniciar sesión para dejar una reseña.",
+                                            Toast.LENGTH_LONG).show()
+                                    }
+                                },
+                                colors = ButtonDefaults.buttonColors(
+                                    containerColor = colorScheme.secondary,
+                                    contentColor = colorScheme.onSecondary
+                                ),
+                                modifier = Modifier.weight(1f)
+                            ) {
+                                Text("Dejar Reseña")
+                            }
                         }
                     }
 
-                    // BOTONES DE ACCIÓN
-                    Row(
-                        modifier = Modifier.fillMaxWidth().padding(bottom = 16.dp),
-                        horizontalArrangement = Arrangement.SpaceBetween,
-                        verticalAlignment = Alignment.CenterVertically
-                    ) {
-                        Button(
-                            onClick = {
-                                carritoViewModel.agregarAlCarrito(producto)
-                                Toast.makeText(
-                                    context,
-                                    "${producto.nombre} agregado al carrito!",
-                                    Toast.LENGTH_SHORT
-                                ).show()
-                            },
-                            colors = ButtonDefaults.buttonColors(
-                                containerColor = colorScheme.primary,
-                                contentColor = colorScheme.onPrimary
-                            ),
-                            modifier = Modifier.weight(1f).padding(end = 8.dp)
-                        ) {
-                            Text("Agregar al Carrito")
-                        }
-
-                        Button(
-                            onClick = {
-                                if (currentUser != null) {
-                                    showReviewModal = true
-                                } else {
-                                    Toast.makeText(
-                                        context,
-                                        "Debes iniciar sesión para dejar una reseña.",
-                                        Toast.LENGTH_LONG).show()
-                                }
-                            },
-                            colors = ButtonDefaults.buttonColors(
-                                containerColor = colorScheme.secondary,
-                                contentColor = colorScheme.onSecondary
-                            ),
-                            modifier = Modifier.weight(1f)
-                        ) {
-                            Text("Dejar Reseña")
-                        }
+                    item {
+                        Text(
+                            "Reseñas de la Comunidad (${resenas.size})",
+                            style = MaterialTheme.typography.titleLarge,
+                            color = colorScheme.primary,
+                            modifier = Modifier.padding(vertical = 16.dp)
+                        )
                     }
-                }
 
-                // RESEÑAS
-                item {
-                    Text(
-                        "Reseñas de la Comunidad (${resenas.size})",
-                        style = MaterialTheme.typography.titleLarge,
-                        color = colorScheme.primary,
-                        modifier = Modifier.padding(vertical = 16.dp)
-                    )
-                }
-
-                items(resenas) { resena ->
-                    ResenaCard(resena = resena, colorScheme = colorScheme)
+                    items(resenas) { resena ->
+                        ResenaCard(resena = resena, colorScheme = colorScheme)
+                    }
                 }
             }
         }
     }
 
+
     if (showReviewModal && currentUser != null && producto != null) {
+
         val user = currentUser!!
 
         ReviewModal(

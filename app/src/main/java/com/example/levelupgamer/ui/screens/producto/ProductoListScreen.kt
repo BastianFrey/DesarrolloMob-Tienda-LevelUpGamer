@@ -194,7 +194,6 @@ fun ProductoListScreen(
         }
     }
 
-    // ⬇️ DIÁLOGO DE CONFIRMACIÓN DE ELIMINACIÓN
     if (showDeleteConfirmation && productToDelete != null) {
         val producto = productToDelete!!
         AlertDialog(
@@ -229,7 +228,6 @@ fun ProductoListScreen(
             containerColor = colorScheme.surface
         )
     }
-    // ⬆️ FIN DIÁLOGO DE CONFIRMACIÓN
 }
 
 @Composable
