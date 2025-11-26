@@ -35,6 +35,12 @@ import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Scaffold
+// ⬇️ IMPORTACIONES CRÍTICAS PARA SNACKBAR
+import androidx.compose.material3.SnackbarDuration
+import androidx.compose.material3.SnackbarHost
+import androidx.compose.material3.SnackbarHostState
+import androidx.compose.runtime.rememberCoroutineScope
+// ⬆️ FIN IMPORTACIONES SNACKBAR
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextFieldDefaults
 import androidx.compose.runtime.Composable
@@ -57,6 +63,7 @@ import com.example.levelupgamer.data.model.Producto
 import com.example.levelupgamer.viewmodel.CarritoViewModel
 import com.example.levelupgamer.viewmodel.ProductoViewModel
 import com.example.levelupgamer.viewmodel.UserViewModel
+import kotlinx.coroutines.launch
 
 private val categoriasCaso = listOf(
     "Todos",
@@ -90,8 +97,12 @@ fun ProductoListScreen(
     var showDeleteConfirmation by remember { mutableStateOf(false) }
     var productToDelete by remember { mutableStateOf<Producto?>(null) }
 
+    val snackbarHostState = remember { SnackbarHostState() }
+    val scope = rememberCoroutineScope()
+
     Scaffold(
         containerColor = colorScheme.background,
+        snackbarHost = { SnackbarHost(snackbarHostState) },
         floatingActionButton = {
             if (isAdmin) {
                 FloatingActionButton(
@@ -186,7 +197,15 @@ fun ProductoListScreen(
                                 productToDelete = prod
                                 showDeleteConfirmation = true
                             },
-                            onAddToCart = { carritoViewModel.agregarAlCarrito(prod) }
+                            onAddToCart = {
+                                carritoViewModel.agregarAlCarrito(prod)
+                                scope.launch {
+                                    snackbarHostState.showSnackbar(
+                                        message = "Se agregó ${prod.nombre} al carrito",
+                                        duration = SnackbarDuration.Short
+                                    )
+                                }
+                            }
                         )
                     }
                 }
@@ -206,7 +225,7 @@ fun ProductoListScreen(
             confirmButton = {
                 Button(
                     onClick = {
-                        productoViewModel.eliminarProducto(producto)
+                        productoViewModel.eliminarProducto(producto) // Llama a la lógica de eliminación
                         showDeleteConfirmation = false
                         productToDelete = null
                     },
