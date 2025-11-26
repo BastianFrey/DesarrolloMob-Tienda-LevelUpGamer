@@ -22,6 +22,9 @@ import androidx.compose.ui.unit.sp
 import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavController
 import com.example.levelupgamer.data.model.Resena
+// ⬇️ NUEVA IMPORTACIÓN DEL CARRO
+import com.example.levelupgamer.viewmodel.CarritoViewModel
+// ⬆️ FIN NUEVA IMPORTACIÓN
 import com.example.levelupgamer.viewmodel.ProductoViewModel
 import com.example.levelupgamer.viewmodel.ResenaViewModel
 import com.example.levelupgamer.viewmodel.UserViewModel
@@ -33,7 +36,8 @@ import java.util.Locale
 fun ProductoDetailScreen(
     navController: NavController,
     productoId: Int,
-    userViewModel: UserViewModel
+    userViewModel: UserViewModel,
+    carritoViewModel: CarritoViewModel = viewModel()
 ) {
     val colorScheme = MaterialTheme.colorScheme
     val context = LocalContext.current
@@ -115,14 +119,21 @@ fun ProductoDetailScreen(
                         verticalAlignment = Alignment.CenterVertically
                     ) {
                         Button(
-                            onClick = { navController.popBackStack() },
+                            onClick = {
+                                carritoViewModel.agregarAlCarrito(producto)
+                                Toast.makeText(
+                                    context,
+                                    "${producto.nombre} agregado al carrito!",
+                                    Toast.LENGTH_SHORT
+                                ).show()
+                            },
                             colors = ButtonDefaults.buttonColors(
                                 containerColor = colorScheme.primary,
                                 contentColor = colorScheme.onPrimary
                             ),
                             modifier = Modifier.weight(1f).padding(end = 8.dp)
                         ) {
-                            Text("Volver")
+                            Text("Agregar al Carrito")
                         }
 
                         Button(
@@ -165,7 +176,6 @@ fun ProductoDetailScreen(
     }
 
     if (showReviewModal && currentUser != null && producto != null) {
-
         val user = currentUser!!
 
         ReviewModal(
