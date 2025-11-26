@@ -11,5 +11,6 @@ data class User(
     val contrasena: String,
     val anioNacimiento: Int,
     val puntosLevelUp: Int,
-    val nivelGamer: Int
+    val nivelGamer: Int,
+    val rol: String = "usuario"
 )

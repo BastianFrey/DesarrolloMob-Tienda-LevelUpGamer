@@ -52,18 +52,17 @@ fun CarritoScreen(navController: NavController, userViewModel: UserViewModel) {
                             snackbarHostState.showSnackbar("¡Ganaste 50 Puntos LevelUp!")
                         }
                         carritoViewModel.limpiarCarrito()
-                        snackbarHostState.showSnackbar("¡Compra finalizada con éxito!")
+                        snackbarHostState.showSnackbar("¡Compra finalizada con éxito!", duration = SnackbarDuration.Long)
                         navController.navigate("home")
                     }
                 }
             } else {
                 carritoViewModel.limpiarCarrito()
-                snackbarHostState.showSnackbar("¡Compra finalizada con éxito!")
+                snackbarHostState.showSnackbar("¡Compra finalizada con éxito!", duration = SnackbarDuration.Long)
                 navController.navigate("home")
             }
         }
     }
-
 
     Scaffold(
         modifier = Modifier.background(colorScheme.background),
@@ -258,7 +257,7 @@ fun CarritoScreen(navController: NavController, userViewModel: UserViewModel) {
                                     }
                                 ) {
                                     Icon(
-                                        Icons.AutoMirrored.Filled.ArrowBack, // Usamos ArrowBack para indicar decremento
+                                        Icons.AutoMirrored.Filled.ArrowBack,
                                         contentDescription = "Disminuir",
                                         tint = colorScheme.primary
                                     )

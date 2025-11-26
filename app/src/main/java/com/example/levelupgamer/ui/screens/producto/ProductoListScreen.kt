@@ -22,6 +22,10 @@ import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Add
 import androidx.compose.material.icons.filled.Search
+// ⬇️ IMPORTACIONES DE DIALOG Y ESTADO
+import androidx.compose.material3.AlertDialog
+import androidx.compose.material3.TextButton
+// ⬆️ FIN IMPORTACIONES
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.Card
@@ -38,6 +42,11 @@ import androidx.compose.material3.TextFieldDefaults
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
+// ⬇️ IMPORTACIONES DE ESTADO
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
+// ⬆️ FIN IMPORTACIONES DE ESTADO
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.layout.ContentScale
@@ -75,12 +84,15 @@ fun ProductoListScreen(
     val colorScheme = MaterialTheme.colorScheme
 
     val currentUser by userViewModel.currentUser.collectAsState()
-    val isAdmin = currentUser?.correo?.endsWith("@admin.cl") == true
+    val isAdmin = currentUser?.rol == "admin"
 
     val searchText by productoViewModel.searchText.collectAsState()
     val categoriaSeleccionada by productoViewModel.selectedCategory.collectAsState()
 
     val productosFiltrados by productoViewModel.productosFiltrados.collectAsState()
+
+    var showDeleteConfirmation by remember { mutableStateOf(false) }
+    var productToDelete by remember { mutableStateOf<Producto?>(null) }
 
     Scaffold(
         containerColor = colorScheme.background,
@@ -168,13 +180,16 @@ fun ProductoListScreen(
                     verticalArrangement = Arrangement.spacedBy(8.dp),
                     horizontalArrangement = Arrangement.spacedBy(8.dp)
                 ) {
-                    items(productosFiltrados) { prod ->
+                    items(productosFiltrados, key = { it.id }) { prod ->
                         ProductoCard(
                             producto = prod,
                             navController = navController,
                             isAdmin = isAdmin,
                             onEdit = { navController.navigate("editProducto/${prod.id}") },
-                            onDelete = { productoViewModel.eliminarProducto(prod) },
+                            onDelete = {
+                                productToDelete = prod
+                                showDeleteConfirmation = true
+                            },
                             onAddToCart = { carritoViewModel.agregarAlCarrito(prod) }
                         )
                     }
@@ -182,6 +197,42 @@ fun ProductoListScreen(
             }
         }
     }
+
+    if (showDeleteConfirmation && productToDelete != null) {
+        val producto = productToDelete!!
+        AlertDialog(
+            onDismissRequest = {
+                showDeleteConfirmation = false
+                productToDelete = null
+            },
+            title = { Text("Confirmar Eliminación", color = colorScheme.error) },
+            text = { Text("¿Estás seguro de que deseas eliminar permanentemente el producto: \"${producto.nombre}\"? Esta acción no se puede deshacer.") },
+            confirmButton = {
+                Button(
+                    onClick = {
+                        productoViewModel.eliminarProducto(producto)
+                        showDeleteConfirmation = false
+                        productToDelete = null
+                    },
+                    colors = ButtonDefaults.buttonColors(containerColor = colorScheme.error)
+                ) {
+                    Text("Eliminar", color = colorScheme.onError)
+                }
+            },
+            dismissButton = {
+                TextButton(
+                    onClick = {
+                        showDeleteConfirmation = false
+                        productToDelete = null
+                    }
+                ) {
+                    Text("Cancelar", color = colorScheme.secondary)
+                }
+            },
+            containerColor = colorScheme.surface
+        )
+    }
+    // ⬆️ FIN DIÁLOGO DE CONFIRMACIÓN
 }
 
 @Composable
@@ -255,6 +306,7 @@ fun ProductoCard(
                             Text("Editar", color = colorScheme.onPrimary, fontSize = 12.sp)
                         }
                         Spacer(modifier = Modifier.width(6.dp))
+                        // ⬇️ Este botón ahora llama a la función onDelete, que activa el diálogo
                         Button(
                             onClick = onDelete,
                             colors = ButtonDefaults.buttonColors(
