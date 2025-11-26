@@ -3,12 +3,14 @@ package com.example.levelupgamer.viewmodel
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.example.levelupgamer.data.model.Noticia
-import com.example.levelupgamer.data.repository.NoticiaRepository
+import com.example.levelupgamer.data.repository.NoticiaRepository // Asegúrate de que esta importación sea correcta
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.stateIn
 
-class NoticiaViewModel(private val repository: NoticiaRepository = NoticiaRepository()) : ViewModel() {
+class NoticiaViewModel : ViewModel() {
+
+    private val repository = NoticiaRepository()
 
     val allNoticias: StateFlow<List<Noticia>> = repository.getAllNoticias()
         .stateIn(

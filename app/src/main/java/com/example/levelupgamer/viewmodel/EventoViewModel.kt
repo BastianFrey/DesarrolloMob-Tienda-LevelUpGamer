@@ -3,12 +3,13 @@ package com.example.levelupgamer.viewmodel
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.example.levelupgamer.data.model.Evento
-import com.example.levelupgamer.data.repository.EventoRepository
+import com.example.levelupgamer.data.repository.EventoRepository // Asegúrate de que esta importación sea correcta
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.stateIn
 
-class EventoViewModel(private val repository: EventoRepository = EventoRepository()) : ViewModel() {
+class EventoViewModel : ViewModel() {
+    private val repository = EventoRepository()
 
     val allEventos: StateFlow<List<Evento>> = repository.getAllEventos()
         .stateIn(
