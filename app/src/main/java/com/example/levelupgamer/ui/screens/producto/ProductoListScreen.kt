@@ -22,10 +22,8 @@ import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Add
 import androidx.compose.material.icons.filled.Search
-// ⬇️ IMPORTACIONES DE DIALOG Y ESTADO
 import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.TextButton
-// ⬆️ FIN IMPORTACIONES
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.Card
@@ -42,11 +40,9 @@ import androidx.compose.material3.TextFieldDefaults
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
-// ⬇️ IMPORTACIONES DE ESTADO
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
-// ⬆️ FIN IMPORTACIONES DE ESTADO
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.layout.ContentScale
@@ -84,7 +80,7 @@ fun ProductoListScreen(
     val colorScheme = MaterialTheme.colorScheme
 
     val currentUser by userViewModel.currentUser.collectAsState()
-    val isAdmin = currentUser?.rol == "admin"
+    val isAdmin = currentUser?.correo?.endsWith("@admin.cl") == true
 
     val searchText by productoViewModel.searchText.collectAsState()
     val categoriaSeleccionada by productoViewModel.selectedCategory.collectAsState()
@@ -198,6 +194,7 @@ fun ProductoListScreen(
         }
     }
 
+    // ⬇️ DIÁLOGO DE CONFIRMACIÓN DE ELIMINACIÓN
     if (showDeleteConfirmation && productToDelete != null) {
         val producto = productToDelete!!
         AlertDialog(
@@ -306,7 +303,6 @@ fun ProductoCard(
                             Text("Editar", color = colorScheme.onPrimary, fontSize = 12.sp)
                         }
                         Spacer(modifier = Modifier.width(6.dp))
-                        // ⬇️ Este botón ahora llama a la función onDelete, que activa el diálogo
                         Button(
                             onClick = onDelete,
                             colors = ButtonDefaults.buttonColors(
