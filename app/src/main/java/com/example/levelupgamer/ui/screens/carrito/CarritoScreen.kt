@@ -14,6 +14,7 @@ import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.font.FontFamily
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
@@ -28,6 +29,7 @@ import kotlinx.coroutines.launch
 @Composable
 fun CarritoScreen(navController: NavController, userViewModel: UserViewModel) {
     val colorScheme = MaterialTheme.colorScheme
+    val context = LocalContext.current
 
     val carritoViewModel: CarritoViewModel = viewModel()
     val productosCarrito by carritoViewModel.productosCarrito.collectAsState()
@@ -38,6 +40,30 @@ fun CarritoScreen(navController: NavController, userViewModel: UserViewModel) {
 
     val tieneDescuento = currentUser?.correo?.endsWith("@duocuc.cl") == true
     val totalConDescuento = if (tieneDescuento) totalCarrito * 0.8 else totalCarrito
+
+    val onFinalizarCompra: () -> Unit = {
+        scope.launch {
+            snackbarHostState.showSnackbar("Procesando compra...", duration = SnackbarDuration.Short)
+
+            if (currentUser != null) {
+                userViewModel.agregarPuntos(50) { success ->
+                    scope.launch {
+                        if (success) {
+                            snackbarHostState.showSnackbar("¡Ganaste 50 Puntos LevelUp!")
+                        }
+                        carritoViewModel.limpiarCarrito()
+                        snackbarHostState.showSnackbar("¡Compra finalizada con éxito!")
+                        navController.navigate("home")
+                    }
+                }
+            } else {
+                carritoViewModel.limpiarCarrito()
+                snackbarHostState.showSnackbar("¡Compra finalizada con éxito!")
+                navController.navigate("home")
+            }
+        }
+    }
+
 
     Scaffold(
         modifier = Modifier.background(colorScheme.background),
@@ -102,24 +128,7 @@ fun CarritoScreen(navController: NavController, userViewModel: UserViewModel) {
                         }
                         Spacer(modifier = Modifier.height(16.dp))
                         Button(
-                            onClick = {
-                                scope.launch {
-                                    snackbarHostState.showSnackbar("¡Compra finalizada con éxito!")
-
-                                    if (currentUser != null) {
-                                        userViewModel.agregarPuntos(50) { success ->
-                                            if (success) {
-
-                                                scope.launch {
-                                                    snackbarHostState.showSnackbar("¡Ganaste 50 Puntos LevelUp!")
-                                                }
-                                            }
-                                        }
-                                    }
-
-                                    carritoViewModel.limpiarCarrito()
-                                }
-                            },
+                            onClick = onFinalizarCompra,
                             modifier = Modifier.fillMaxWidth(),
                             colors = ButtonDefaults.buttonColors(
                                 containerColor = colorScheme.secondary,
@@ -179,13 +188,12 @@ fun CarritoScreen(navController: NavController, userViewModel: UserViewModel) {
                     .background(colorScheme.background)
                     .padding(16.dp)
             ) {
-                items(productosCarrito) { carritoItem ->
+                items(productosCarrito, key = { it.productoId }) { carritoItem ->
                     Card(
                         modifier = Modifier
                             .fillMaxWidth()
                             .padding(vertical = 4.dp),
                         colors = CardDefaults.cardColors(
-
                             containerColor = colorScheme.surface
                         )
                     ) {
@@ -225,7 +233,8 @@ fun CarritoScreen(navController: NavController, userViewModel: UserViewModel) {
                             }
 
                             Column(
-                                horizontalAlignment = Alignment.CenterHorizontally
+                                horizontalAlignment = Alignment.CenterHorizontally,
+                                modifier = Modifier.padding(horizontal = 8.dp)
                             ) {
                                 IconButton(
                                     onClick = {
@@ -240,7 +249,7 @@ fun CarritoScreen(navController: NavController, userViewModel: UserViewModel) {
                                 }
                                 Text(
                                     carritoItem.cantidad.toString(),
-                                    color = colorScheme.onPrimary,
+                                    color = colorScheme.onBackground,
                                     fontWeight = FontWeight.Bold
                                 )
                                 IconButton(
@@ -249,7 +258,7 @@ fun CarritoScreen(navController: NavController, userViewModel: UserViewModel) {
                                     }
                                 ) {
                                     Icon(
-                                        Icons.Default.Delete,
+                                        Icons.AutoMirrored.Filled.ArrowBack, // Usamos ArrowBack para indicar decremento
                                         contentDescription = "Disminuir",
                                         tint = colorScheme.primary
                                     )
@@ -261,7 +270,7 @@ fun CarritoScreen(navController: NavController, userViewModel: UserViewModel) {
                             ) {
                                 Icon(
                                     Icons.Default.Delete,
-                                    contentDescription = "Eliminar",
+                                    contentDescription = "Eliminar item",
                                     tint = colorScheme.error
                                 )
                             }
