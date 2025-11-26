@@ -1,4 +1,4 @@
-package com.example.levelupgamer.ui.screens
+package com.example.levelupgamer.ui.screens.noticia
 
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable

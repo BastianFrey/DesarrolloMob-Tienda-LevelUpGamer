@@ -1,4 +1,4 @@
-package com.example.levelupgamer.ui.screens.Evento
+package com.example.levelupgamer.ui.screens.evento
 
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background

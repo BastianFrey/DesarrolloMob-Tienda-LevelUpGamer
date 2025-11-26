@@ -21,6 +21,8 @@ import androidx.navigation.navDeepLink
 import com.example.levelupgamer.ui.screens.EditProductoScreen
 import com.example.levelupgamer.ui.screens.MainLayout
 import com.example.levelupgamer.ui.screens.ScannerScreen
+import com.example.levelupgamer.ui.screens.evento.EventosScreen
+import com.example.levelupgamer.ui.screens.noticia.NoticiasScreen
 import com.example.levelupgamer.ui.screens.carrito.CarritoScreen
 import com.example.levelupgamer.ui.screens.cuenta.MiCuentaScreen
 import com.example.levelupgamer.ui.screens.home.HomeScreen
@@ -35,6 +37,8 @@ import com.example.levelupgamer.ui.screens.welcome.WelcomeScreen
 import com.example.levelupgamer.viewmodel.CarritoViewModel
 import com.example.levelupgamer.viewmodel.ProductoViewModel
 import com.example.levelupgamer.viewmodel.UserViewModel
+import com.example.levelupgamer.viewmodel.EventoViewModel
+import com.example.levelupgamer.viewmodel.NoticiaViewModel
 
 @Composable
 fun AppNavigation() {
@@ -42,6 +46,8 @@ fun AppNavigation() {
     val userViewModel: UserViewModel = viewModel()
     val carritoViewModel: CarritoViewModel = viewModel()
     val productoViewModel: ProductoViewModel = viewModel()
+    val eventoViewModel: EventoViewModel = viewModel()
+    val noticiaViewModel: NoticiaViewModel = viewModel()
     val cantidadCarrito = carritoViewModel.getCantidadTotal()
 
     NavHost(navController, startDestination = "welcome") {
@@ -52,7 +58,28 @@ fun AppNavigation() {
         composable(
             "home",
             deepLinks = listOf(navDeepLink { uriPattern = "levelupgamer://inicio" })
-        ) { MainLayout(navController = navController, title = "Bienvenido") { HomeScreen(navController, productoViewModel) } }
+        ) {
+            MainLayout(navController = navController, title = "Bienvenido") {
+                HomeScreen(
+                    navController = navController,
+                    productoViewModel = productoViewModel,
+                    eventoViewModel = eventoViewModel,
+                    noticiaViewModel = noticiaViewModel
+                )
+            }
+        }
+
+        composable("eventos") {
+            MainLayout(navController = navController, title = "Eventos LevelUp") {
+                EventosScreen(navController, eventoViewModel)
+            }
+        }
+        composable("noticias") {
+            MainLayout(navController = navController, title = "Noticias Gaming") {
+                NoticiasScreen(navController, noticiaViewModel)
+            }
+        }
+
         composable("productos") {
             MainLayout(
                 navController = navController,
