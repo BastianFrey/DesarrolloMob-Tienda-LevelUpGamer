@@ -61,6 +61,28 @@ fun MainLayout(
                     modifier = Modifier.padding(NavigationDrawerItemDefaults.ItemPadding)
                 )
 
+                // ⬇️ NUEVO ITEM: Eventos
+                NavigationDrawerItem(
+                    label = { Text("Eventos", color = colorScheme.secondary, fontFamily = FontFamily.Default) },
+                    selected = false,
+                    onClick = {
+                        navController.navigate("eventos")
+                        scope.launch { drawerState.close() }
+                    },
+                    modifier = Modifier.padding(NavigationDrawerItemDefaults.ItemPadding)
+                )
+
+                // ⬇️ NUEVO ITEM: Noticias
+                NavigationDrawerItem(
+                    label = { Text("Noticias", color = colorScheme.secondary, fontFamily = FontFamily.Default) },
+                    selected = false,
+                    onClick = {
+                        navController.navigate("noticias")
+                        scope.launch { drawerState.close() }
+                    },
+                    modifier = Modifier.padding(NavigationDrawerItemDefaults.ItemPadding)
+                )
+
                 NavigationDrawerItem(
                     label = { Text("Productos", color = colorScheme.secondary, fontFamily = FontFamily.Default) },
                     selected = false,
