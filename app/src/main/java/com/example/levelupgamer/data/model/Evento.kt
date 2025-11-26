@@ -9,5 +9,5 @@ data class Evento(
     val id: Int = 0,
     val titulo: String,
     val fecha: String,
-    val imagenResId: Int
+    val imagenNombre: String
 )

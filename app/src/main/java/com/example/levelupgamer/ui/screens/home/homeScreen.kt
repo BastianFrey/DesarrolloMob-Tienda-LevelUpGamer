@@ -175,7 +175,8 @@ fun EventoCard(evento: Evento, colorScheme: ColorScheme, onClick: () -> Unit) {
     ) {
         Column {
             Image(
-                painter = painterResource(id = evento.imagenResId),
+                // ⬇️ CORRECCIÓN CLAVE: Usamos la función de mapeo para obtener el ID (Int)
+                painter = painterResource(id = eventoImage(evento.imagenNombre)),
                 contentDescription = evento.titulo,
                 contentScale = ContentScale.Crop,
                 modifier = Modifier
@@ -199,6 +200,7 @@ fun EventoCard(evento: Evento, colorScheme: ColorScheme, onClick: () -> Unit) {
         }
     }
 }
+
 
 @Composable
 fun SeccionNoticias(navController: NavController, colorScheme: ColorScheme, noticias: List<Noticia>) {
@@ -337,6 +339,17 @@ fun ProductoHomeCard(producto: Producto, colorScheme: ColorScheme, onClick: () -
                 )
             }
         }
+    }
+}
+
+private fun eventoImage(nombre: String): Int {
+    return when (nombre.lowercase()) {
+        "catan" -> R.drawable.catan
+        "carcassone" -> R.drawable.carcassone
+        "ps5" -> R.drawable.ps5
+        "pc" -> R.drawable.pc
+        "logo" -> R.drawable.logo
+        else -> R.drawable.ic_launcher_background
     }
 }
 
