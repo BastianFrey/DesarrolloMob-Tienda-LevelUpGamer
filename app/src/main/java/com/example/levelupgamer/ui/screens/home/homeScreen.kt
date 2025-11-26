@@ -12,43 +12,41 @@ import androidx.compose.material3.*
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
-import androidx.compose.ui.Alignment // <-- 1. ASEGÚRATE DE IMPORTAR ESTO
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavController
 import com.example.levelupgamer.R
+// ⬇️ Nuevas importaciones de Modelos y ViewModels
+import com.example.levelupgamer.data.model.Evento
+import com.example.levelupgamer.data.model.Noticia
 import com.example.levelupgamer.data.model.Producto
+import com.example.levelupgamer.viewmodel.EventoViewModel
+import com.example.levelupgamer.viewmodel.NoticiaViewModel
+// ⬆️ Fin nuevas importaciones
 import com.example.levelupgamer.viewmodel.ProductoViewModel
-import com.example.levelupgamer.viewmodel.UserViewModel // <-- 2. IMPORTAMOS EL USERVIEWMODEL
-
-// (data class Evento y lista de ejemplos se quedan igual)
-data class Evento(
-    val id: Int,
-    val titulo: String,
-    val fecha: String,
-    val imagenResId: Int
-)
-
-val eventosDeEjemplo = listOf(
-    Evento(1, "Torneo de Catan", "20 NOV", R.drawable.catan),
-    Evento(2, "Showmatch PS5", "25 NOV", R.drawable.ps5),
-    Evento(3, "LAN Party", "5 DIC", R.drawable.pc)
-)
+import com.example.levelupgamer.viewmodel.UserViewModel
 
 @Composable
 fun HomeScreen(
     navController: NavController,
     productoViewModel: ProductoViewModel = viewModel(),
-    userViewModel: UserViewModel = viewModel()
+    userViewModel: UserViewModel = viewModel(),
+    eventoViewModel: EventoViewModel = viewModel(),
+    noticiaViewModel: NoticiaViewModel = viewModel()
 ) {
     val colorScheme = MaterialTheme.colorScheme
 
     val productos by productoViewModel.productosFiltrados.collectAsState()
+
+    val eventosDestacados by eventoViewModel.eventosDestacados.collectAsState()
+    val noticiasDestacadas by noticiaViewModel.noticiasDestacadas.collectAsState()
 
     val currentUser by userViewModel.currentUser.collectAsState()
     val nombreUsuario = currentUser?.nombre ?: "Gamer"
@@ -65,7 +63,19 @@ fun HomeScreen(
         }
 
         item {
-            SeccionEventos(navController = navController, colorScheme = colorScheme)
+            SeccionEventos(
+                navController = navController,
+                colorScheme = colorScheme,
+                eventos = eventosDestacados
+            )
+        }
+
+        item {
+            SeccionNoticias(
+                navController = navController,
+                colorScheme = colorScheme,
+                noticias = noticiasDestacadas
+            )
         }
 
         item {
@@ -106,25 +116,48 @@ fun Header(navController: NavController, nombreUsuario: String) {
     }
 }
 
-
 @Composable
-fun SeccionEventos(navController: NavController, colorScheme: ColorScheme) {
+fun SeccionEventos(navController: NavController, colorScheme: ColorScheme, eventos: List<Evento>) {
     Column(modifier = Modifier.fillMaxWidth()) {
-        Text(
-            text = "Próximos Eventos",
-            style = MaterialTheme.typography.titleLarge,
-            color = colorScheme.secondary,
-            fontWeight = FontWeight.Bold,
-            modifier = Modifier.padding(horizontal = 16.dp)
-        )
-        Spacer(modifier = Modifier.height(8.dp))
-        LazyRow(
-            horizontalArrangement = Arrangement.spacedBy(12.dp),
-            contentPadding = PaddingValues(horizontal = 16.dp)
+        Row(
+            modifier = Modifier
+                .fillMaxWidth()
+                .padding(horizontal = 16.dp),
+            horizontalArrangement = Arrangement.SpaceBetween,
+            verticalAlignment = Alignment.CenterVertically
         ) {
-            items(eventosDeEjemplo) { evento ->
-                EventoCard(evento = evento, colorScheme = colorScheme, onClick = {
-                })
+            Text(
+                text = "Próximos Eventos",
+                style = MaterialTheme.typography.titleLarge,
+                color = colorScheme.secondary,
+                fontWeight = FontWeight.Bold,
+            )
+            if (eventos.isNotEmpty()) {
+                Text(
+                    text = "Ver todos >",
+                    color = colorScheme.primary,
+                    fontSize = 14.sp,
+                    modifier = Modifier.clickable { navController.navigate("eventos") } // NAVEGACIÓN
+                )
+            }
+        }
+        Spacer(modifier = Modifier.height(8.dp))
+
+        if (eventos.isEmpty()) {
+            Text(
+                text = "No hay eventos próximos.",
+                modifier = Modifier.padding(horizontal = 16.dp),
+                color = colorScheme.onSurface
+            )
+        } else {
+            LazyRow(
+                horizontalArrangement = Arrangement.spacedBy(12.dp),
+                contentPadding = PaddingValues(horizontal = 16.dp)
+            ) {
+                items(eventos) { evento ->
+                    EventoCard(evento = evento, colorScheme = colorScheme, onClick = {
+                    })
+                }
             }
         }
     }
@@ -162,6 +195,70 @@ fun EventoCard(evento: Evento, colorScheme: ColorScheme, onClick: () -> Unit) {
                     color = colorScheme.onSurface,
                     fontSize = 12.sp
                 )
+            }
+        }
+    }
+}
+
+@Composable
+fun SeccionNoticias(navController: NavController, colorScheme: ColorScheme, noticias: List<Noticia>) {
+    Column(modifier = Modifier.fillMaxWidth()) {
+        Row(
+            modifier = Modifier
+                .fillMaxWidth()
+                .padding(horizontal = 16.dp),
+            horizontalArrangement = Arrangement.SpaceBetween,
+            verticalAlignment = Alignment.CenterVertically
+        ) {
+            Text(
+                text = "Últimas Noticias",
+                style = MaterialTheme.typography.titleLarge,
+                color = colorScheme.secondary,
+                fontWeight = FontWeight.Bold,
+            )
+            if (noticias.isNotEmpty()) {
+                Text(
+                    text = "Ver todas >",
+                    color = colorScheme.primary,
+                    fontSize = 14.sp,
+                    modifier = Modifier.clickable { navController.navigate("noticias") }
+                )
+            }
+        }
+        Spacer(modifier = Modifier.height(8.dp))
+
+        if (noticias.isEmpty()) {
+            Text(
+                text = "No hay noticias destacadas.",
+                modifier = Modifier.padding(horizontal = 16.dp),
+                color = colorScheme.onSurface
+            )
+        } else {
+            Column(modifier = Modifier.padding(horizontal = 16.dp), verticalArrangement = Arrangement.spacedBy(8.dp)) {
+                noticias.forEach { noticia ->
+                    Card(
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .clickable { navController.navigate("noticias") },
+                        colors = CardDefaults.cardColors(containerColor = colorScheme.surface)
+                    ) {
+                        Column(modifier = Modifier.padding(12.dp)) {
+                            Text(
+                                text = noticia.titulo,
+                                fontWeight = FontWeight.Bold,
+                                color = colorScheme.secondary,
+                                fontSize = 14.sp,
+                                maxLines = 1,
+                                overflow = TextOverflow.Ellipsis
+                            )
+                            Text(
+                                text = "Fuente: ${noticia.fuente}",
+                                color = colorScheme.onSurface,
+                                fontSize = 12.sp
+                            )
+                        }
+                    }
+                }
             }
         }
     }
