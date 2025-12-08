@@ -1,12 +1,12 @@
 package com.example.levelupgamer.data.model
 
 data class LoginRequest(
-    val email: String,
-    val password: String
+    val correo: String,
+    val contrasena: String
 )
 
 data class LoginResponse(
     val token: String,
-    val usuarioId: Long,
-    val rol: String
+    val rol: String,
+    val usuarioId: Long
 )
