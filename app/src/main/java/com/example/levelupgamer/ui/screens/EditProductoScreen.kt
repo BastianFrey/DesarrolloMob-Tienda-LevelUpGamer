@@ -15,6 +15,7 @@ import androidx.compose.material3.OutlinedTextFieldDefaults
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
@@ -30,15 +31,24 @@ import com.example.levelupgamer.viewmodel.ProductoViewModel
 fun EditProductoScreen(
     navController: NavController,
     productoViewModel: ProductoViewModel,
-    productoId: Int
+    productoId: Long
 ) {
     val colorScheme = MaterialTheme.colorScheme
 
-    val productoState by productoViewModel.getProducto(productoId).collectAsState(initial = null)
+    val listaProductos by productoViewModel.productosFiltrados.collectAsState()
+    val productoState = listaProductos.find { it.id.toLong() == productoId }
 
     var nombre by remember { mutableStateOf("") }
     var descripcion by remember { mutableStateOf("") }
     var precio by remember { mutableStateOf("") }
+
+    LaunchedEffect(productoState) {
+        productoState?.let {
+            nombre = it.nombre
+            descripcion = it.descripcion
+            precio = it.precio.toString()
+        }
+    }
 
     val textFieldColors = OutlinedTextFieldDefaults.colors(
         focusedTextColor = colorScheme.onBackground,
@@ -49,12 +59,6 @@ fun EditProductoScreen(
         focusedLabelColor = colorScheme.secondary,
         unfocusedLabelColor = colorScheme.onSurface,
     )
-
-    productoState?.let {
-        nombre = it.nombre
-        descripcion = it.descripcion
-        precio = it.precio.toString()
-    }
 
     Scaffold(
         containerColor = colorScheme.background
@@ -105,7 +109,6 @@ fun EditProductoScreen(
 
             Spacer(modifier = Modifier.height(16.dp))
 
-            // Guardar
             Button(
                 onClick = {
                     val productoActualizado = productoState?.copy(

@@ -2,19 +2,18 @@ package com.example.levelupgamer.ui.screens.producto
 
 import android.annotation.SuppressLint
 import android.widget.Toast
-import androidx.compose.foundation.background
-import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.Star
 import androidx.compose.material.icons.automirrored.filled.ArrowBack
+import androidx.compose.material.icons.filled.Star
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.font.FontFamily
 import androidx.compose.ui.text.font.FontWeight
@@ -22,6 +21,9 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavController
+import coil.compose.AsyncImage
+import coil.request.ImageRequest
+import com.example.levelupgamer.R // Asegúrate de importar tu R para las imágenes placeholder
 import com.example.levelupgamer.data.model.Resena
 import com.example.levelupgamer.viewmodel.CarritoViewModel
 import com.example.levelupgamer.viewmodel.ProductoViewModel
@@ -36,7 +38,7 @@ import java.util.Locale
 @Composable
 fun ProductoDetailScreen(
     navController: NavController,
-    productoId: Int,
+    productoId: Long, // 1. CAMBIO: ID recibido como Long (Backend)
     userViewModel: UserViewModel,
     carritoViewModel: CarritoViewModel = viewModel()
 ) {
@@ -48,20 +50,21 @@ fun ProductoDetailScreen(
 
     val currentUser by userViewModel.currentUser.collectAsState()
 
+    // 2. CAMBIO: Observamos la lista global del Backend y buscamos el producto
+    val listaProductos by productoViewModel.productosFiltrados.collectAsState()
+    val producto = listaProductos.find { it.id.toLong() == productoId }
 
-    val productoState by productoViewModel.getProducto(productoId).collectAsState(initial = null)
+    // 3. CAMBIO: Convertimos a Int SOLO para las reseñas (que siguen siendo locales)
+    val productoIdInt = productoId.toInt()
 
-    val producto = productoState
-    val resenas by resenaViewModel.getResenasForProducto(productoId).collectAsState(initial = emptyList())
-
-    val promedioCalificacionNullable by resenaViewModel.promedio(productoId).collectAsState(initial = null)
+    val resenas by resenaViewModel.getResenasForProducto(productoIdInt).collectAsState(initial = emptyList())
+    val promedioCalificacionNullable by resenaViewModel.promedio(productoIdInt).collectAsState(initial = null)
     val promedioCalificacion = promedioCalificacionNullable ?: 0.0
 
     var showReviewModal by remember { mutableStateOf(false) }
 
     val snackbarHostState = remember { SnackbarHostState() }
     val scope = rememberCoroutineScope()
-
 
     Scaffold(
         snackbarHost = { SnackbarHost(snackbarHostState) },
@@ -93,12 +96,8 @@ fun ProductoDetailScreen(
             contentAlignment = Alignment.Center
         ) {
             if (producto == null) {
-                Text(
-                    "Cargando producto...",
-                    color = colorScheme.secondary,
-                    fontFamily = FontFamily.Default,
-                    style = MaterialTheme.typography.headlineMedium
-                )
+                // Si la lista del backend aún no carga o el ID no existe
+                CircularProgressIndicator(color = colorScheme.primary)
             } else {
                 LazyColumn(
                     modifier = Modifier.fillMaxSize(),
@@ -116,6 +115,23 @@ fun ProductoDetailScreen(
                                 modifier = Modifier.padding(24.dp),
                                 horizontalAlignment = Alignment.CenterHorizontally
                             ) {
+                                // 4. NUEVO: Imagen desde URL (Backend) usando Coil
+                                AsyncImage(
+                                    model = ImageRequest.Builder(LocalContext.current)
+                                        .data(producto.imagenUrl) // URL del backend
+                                        .crossfade(true)
+                                        .error(producto.imagenRes) // Fallback a imagen local si falla URL
+                                        .placeholder(R.drawable.logo) // Placeholder mientras carga
+                                        .build(),
+                                    contentDescription = producto.nombre,
+                                    modifier = Modifier
+                                        .height(200.dp)
+                                        .fillMaxWidth(),
+                                    contentScale = ContentScale.Fit
+                                )
+
+                                Spacer(modifier = Modifier.height(16.dp))
+
                                 Text(
                                     producto.nombre,
                                     style = MaterialTheme.typography.headlineLarge,
@@ -145,18 +161,15 @@ fun ProductoDetailScreen(
                             horizontalArrangement = Arrangement.SpaceBetween,
                             verticalAlignment = Alignment.CenterVertically
                         ) {
-                            // ⬇️ BOTÓN AGREGAR AL CARRITO CON SNACKBAR Y NAVEGACIÓN
                             Button(
                                 onClick = {
                                     carritoViewModel.agregarAlCarrito(producto)
-                                    // ⬇️ LÓGICA SNACKBAR: Espera el resultado de la acción
                                     scope.launch {
                                         val result = snackbarHostState.showSnackbar(
-                                            message = "Se agregó ${producto.nombre} al carrito", // MENSAJE SOLICITADO
+                                            message = "Se agregó ${producto.nombre} al carrito",
                                             actionLabel = "Ver Carrito",
                                             duration = SnackbarDuration.Short
                                         )
-                                        // ⬇️ NAVEGACIÓN AL CLIC EN LA ACCIÓN
                                         if (result == SnackbarResult.ActionPerformed) {
                                             navController.navigate("carrito")
                                         }
@@ -211,13 +224,10 @@ fun ProductoDetailScreen(
         }
     }
 
-
     if (showReviewModal && currentUser != null && producto != null) {
-
         val user = currentUser!!
-
         ReviewModal(
-            productoId = producto.id,
+            productoId = productoId, // Pasamos Long
             userId = user.id,
             userName = user.nombre,
             resenaViewModel = resenaViewModel,
@@ -302,7 +312,7 @@ fun RatingDisplay(promedio: Double, totalResenas: Int) {
 
 @Composable
 fun ReviewModal(
-    productoId: Int,
+    productoId: Long, // Recibe Long
     userId: Int,
     userName: String,
     resenaViewModel: ResenaViewModel,
@@ -358,8 +368,9 @@ fun ReviewModal(
             Button(
                 onClick = {
                     if (comentario.isNotBlank()) {
+                        // Cast a INT solo para guardar en BD Local
                         resenaViewModel.agregarResena(
-                            productoId = productoId,
+                            productoId = productoId.toInt(),
                             userId = userId,
                             userName = userName,
                             calificacion = calificacion,

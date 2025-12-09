@@ -113,4 +113,17 @@ class ProductoViewModel(application: Application) : AndroidViewModel(application
             _todosLosProductos.value = listaActual
         }
     }
+
+    fun actualizarProducto(producto: Producto) {
+        viewModelScope.launch {
+            val exito = repository.actualizarProductoEnApi(producto)
+
+            if (exito) {
+                cargarProductosDesdeBackend()
+            } else {
+                Log.e("VIEWMODEL", "No se pudo actualizar el producto")
+            }
+        }
+    }
+
 }

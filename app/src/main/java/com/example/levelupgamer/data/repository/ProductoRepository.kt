@@ -29,4 +29,20 @@ class ProductoRepository(private val dao: ProductoDao) {
     suspend fun insert(producto: Producto) = dao.insert(producto)
 
     fun getAllProductosLocal(): Flow<List<Producto>> = dao.getAllProductos()
+
+    suspend fun actualizarProductoEnApi(producto: Producto): Boolean {
+        return try {
+            val response = api.actualizarProducto(producto.id, producto)
+            if (response.isSuccessful) {
+                Log.d("API_UPDATE", "Producto actualizado: ${response.body()?.nombre}")
+                true // Éxito
+            } else {
+                Log.e("API_UPDATE", "Error al actualizar: ${response.code()}")
+                false // Fallo
+            }
+        } catch (e: Exception) {
+            Log.e("API_UPDATE", "Fallo de conexión: ${e.message}")
+            false
+        }
+    }
 }
