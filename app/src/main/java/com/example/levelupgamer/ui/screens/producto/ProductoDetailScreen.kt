@@ -2,6 +2,7 @@ package com.example.levelupgamer.ui.screens.producto
 
 import android.annotation.SuppressLint
 import android.widget.Toast
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
@@ -38,7 +39,7 @@ import java.util.Locale
 @Composable
 fun ProductoDetailScreen(
     navController: NavController,
-    productoId: Long, // 1. CAMBIO: ID recibido como Long (Backend)
+    productoId: Long,
     userViewModel: UserViewModel,
     carritoViewModel: CarritoViewModel = viewModel()
 ) {
@@ -50,11 +51,9 @@ fun ProductoDetailScreen(
 
     val currentUser by userViewModel.currentUser.collectAsState()
 
-    // 2. CAMBIO: Observamos la lista global del Backend y buscamos el producto
     val listaProductos by productoViewModel.productosFiltrados.collectAsState()
     val producto = listaProductos.find { it.id.toLong() == productoId }
 
-    // 3. CAMBIO: Convertimos a Int SOLO para las reseñas (que siguen siendo locales)
     val productoIdInt = productoId.toInt()
 
     val resenas by resenaViewModel.getResenasForProducto(productoIdInt).collectAsState(initial = emptyList())
@@ -96,7 +95,6 @@ fun ProductoDetailScreen(
             contentAlignment = Alignment.Center
         ) {
             if (producto == null) {
-                // Si la lista del backend aún no carga o el ID no existe
                 CircularProgressIndicator(color = colorScheme.primary)
             } else {
                 LazyColumn(
@@ -104,7 +102,6 @@ fun ProductoDetailScreen(
                     horizontalAlignment = Alignment.CenterHorizontally
                 ) {
                     item {
-                        // DETALLE DE PRODUCTO
                         Card(
                             modifier = Modifier
                                 .fillMaxWidth()
@@ -115,13 +112,12 @@ fun ProductoDetailScreen(
                                 modifier = Modifier.padding(24.dp),
                                 horizontalAlignment = Alignment.CenterHorizontally
                             ) {
-                                // 4. NUEVO: Imagen desde URL (Backend) usando Coil
                                 AsyncImage(
                                     model = ImageRequest.Builder(LocalContext.current)
                                         .data(producto.imagenUrl) // URL del backend
                                         .crossfade(true)
-                                        .error(producto.imagenRes) // Fallback a imagen local si falla URL
-                                        .placeholder(R.drawable.logo) // Placeholder mientras carga
+                                        .error(producto.imagenRes)
+                                        .placeholder(R.drawable.logo)
                                         .build(),
                                     contentDescription = producto.nombre,
                                     modifier = Modifier
@@ -155,7 +151,6 @@ fun ProductoDetailScreen(
                             }
                         }
 
-                        // BOTONES DE ACCIÓN
                         Row(
                             modifier = Modifier.fillMaxWidth().padding(bottom = 16.dp),
                             horizontalArrangement = Arrangement.SpaceBetween,
@@ -206,7 +201,6 @@ fun ProductoDetailScreen(
                         }
                     }
 
-                    // RESEÑAS
                     item {
                         Text(
                             "Reseñas de la Comunidad (${resenas.size})",
@@ -227,7 +221,7 @@ fun ProductoDetailScreen(
     if (showReviewModal && currentUser != null && producto != null) {
         val user = currentUser!!
         ReviewModal(
-            productoId = productoId, // Pasamos Long
+            productoId = productoId,
             userId = user.id,
             userName = user.nombre,
             resenaViewModel = resenaViewModel,
@@ -312,7 +306,7 @@ fun RatingDisplay(promedio: Double, totalResenas: Int) {
 
 @Composable
 fun ReviewModal(
-    productoId: Long, // Recibe Long
+    productoId: Long,
     userId: Int,
     userName: String,
     resenaViewModel: ResenaViewModel,
@@ -368,7 +362,6 @@ fun ReviewModal(
             Button(
                 onClick = {
                     if (comentario.isNotBlank()) {
-                        // Cast a INT solo para guardar en BD Local
                         resenaViewModel.agregarResena(
                             productoId = productoId.toInt(),
                             userId = userId,
