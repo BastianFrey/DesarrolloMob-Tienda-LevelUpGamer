@@ -51,7 +51,7 @@ fun ProductoDetailScreen(
     val currentUser by userViewModel.currentUser.collectAsState()
 
     val listaProductos by productoViewModel.productosFiltrados.collectAsState()
-    val producto = listaProductos.find { it.id.toLong() == productoId }
+    val producto = listaProductos.find { it.id.toLong().toInt() == productoId }
 
     val productoIdInt = productoId.toInt()
 
@@ -305,7 +305,7 @@ fun RatingDisplay(promedio: Double, totalResenas: Int) {
 
 @Composable
 fun ReviewModal(
-    productoId: Long,
+    productoId: Int,
     userId: Int,
     userName: String,
     resenaViewModel: ResenaViewModel,
