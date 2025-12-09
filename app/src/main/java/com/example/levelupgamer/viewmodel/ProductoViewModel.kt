@@ -1,16 +1,17 @@
 package com.example.levelupgamer.viewmodel
 
 import android.app.Application
+import android.util.Log
 import androidx.lifecycle.AndroidViewModel
 import androidx.lifecycle.viewModelScope
 import androidx.room.Room
 import com.example.levelupgamer.data.database.ProductoDatabase
 import com.example.levelupgamer.data.model.Producto
+import com.example.levelupgamer.data.repository.ProductoRepository
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.combine
-import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.launch
 
@@ -20,23 +21,19 @@ class ProductoViewModel(application: Application) : AndroidViewModel(application
         application,
         ProductoDatabase::class.java,
         "levelupgamer.db"
-    ).build()
+    )
+        .fallbackToDestructiveMigration()
+        .build()
 
-    private val _todosLosProductos = db.productoDao().getAllProductos()
+    private val repository = ProductoRepository(db.productoDao())
+
+    private val _todosLosProductos = MutableStateFlow<List<Producto>>(emptyList())
 
     private val _searchText = MutableStateFlow("")
     val searchText = _searchText.asStateFlow()
 
     private val _selectedCategory = MutableStateFlow("Todos")
     val selectedCategory = _selectedCategory.asStateFlow()
-
-    fun onSearchTextChange(text: String) {
-        _searchText.value = text
-    }
-
-    fun onCategorySelected(category: String) {
-        _selectedCategory.value = category
-    }
 
     val productosFiltrados: StateFlow<List<Producto>> =
         combine(_todosLosProductos, _searchText, _selectedCategory) { productos, text, category ->
@@ -48,7 +45,7 @@ class ProductoViewModel(application: Application) : AndroidViewModel(application
             }
 
             if (text.isBlank()) {
-                productosPorCategoria // Si no hay texto, devolvemos la lista (ya filtrada por categoría)
+                productosPorCategoria
             } else {
                 productosPorCategoria.filter { producto ->
                     producto.nombre.contains(text, ignoreCase = true) ||
@@ -63,87 +60,41 @@ class ProductoViewModel(application: Application) : AndroidViewModel(application
             )
 
     init {
+        cargarProductosDesdeBackend()
+    }
+
+    fun cargarProductosDesdeBackend() {
         viewModelScope.launch {
-            val dao = db.productoDao()
-            val actuales = dao.getAllProductos().first()
-            val nombresActuales = actuales.map { it.nombre }.toSet()
+            try {
+                val listaRemota = repository.obtenerProductosDeApi()
 
-            val examen = listOf(
-                Producto(
-                    nombre = "Catan",
-                    descripcion = "JM001 • Juegos de Mesa • Catan",
-                    precio = 29990.0,
-                    categoria = "Juegos de Mesa"
-                ),
-                Producto(
-                    nombre = "Carcassonne",
-                    descripcion = "JM002 • Juegos de Mesa • Carcassonne",
-                    precio = 24990.0,
-                    categoria = "Juegos de Mesa"
-                ),
-                Producto(
-                    nombre = "Controlador Inalámbrico Xbox Series X",
-                    descripcion = "AC001 • Accesorios",
-                    precio = 59990.0,
-                    categoria = "Accesorios"
-                ),
-                Producto(
-                    nombre = "Auriculares Gamer HyperX Cloud II",
-                    descripcion = "AC002 • Accesorios",
-                    precio = 79990.0,
-                    categoria = "Accesorios"
-                ),
-                Producto(
-                    nombre = "PlayStation 5",
-                    descripcion = "CO001 • Consolas",
-                    precio = 549990.0,
-                    categoria = "Consolas"
-                ),
-                Producto(
-                    nombre = "PC Gamer ASUS ROG Strix",
-                    descripcion = "CG001 • Computadores Gamers",
-                    precio = 1299990.0,
-                    categoria = "Computadores Gamers"
-                ),
-                Producto(
-                    nombre = "Silla Gamer Secretlab Titan",
-                    descripcion = "SG001 • Sillas Gamers",
-                    precio = 349990.0,
-                    categoria = "Sillas Gamers"
-                ),
-                Producto(
-                    nombre = "Mouse Gamer Logitech G502 HERO",
-                    descripcion = "MS001 • Mouse",
-                    precio = 49990.0,
-                    categoria = "Mouse"
-                ),
-                Producto(
-                    nombre = "Mousepad Razer Goliathus Extended",
-                    descripcion = "MP001 • Mousepad",
-                    precio = 29990.0,
-                    categoria = "Mousepad"
-                ),
-                Producto(
-                    nombre = "Polera Gamer Personalizada \"Level-Up\"",
-                    descripcion = "PP001 • Poleras gamers",
-                    precio = 14990.0,
-                    categoria = "Poleras gamers"
-                )
-            )
-
-            examen.forEach { prod ->
-                if (prod.nombre !in nombresActuales) {
-                    dao.insert(prod)
+                if (listaRemota.isNotEmpty()) {
+                    Log.d("API_SUCCESS", "Se cargaron ${listaRemota.size} productos")
+                    _todosLosProductos.value = listaRemota
+                } else {
+                    Log.e("API_WARN", "El backend devolvió una lista vacía o falló la conexión")
                 }
+            } catch (e: Exception) {
+                Log.e("API_FAIL", "Error crítico al cargar productos: ${e.message}")
             }
         }
     }
 
-    fun getProducto(id: Int) = db.productoDao().getProductoById(id)
+    fun onSearchTextChange(text: String) {
+        _searchText.value = text
+    }
+
+    fun onCategorySelected(category: String) {
+        _selectedCategory.value = category
+    }
+
+    fun getProducto(id: Long): Producto? {
+        return _todosLosProductos.value.find { it.id.toLong() == id }
+    }
 
     fun agregarProducto(nombre: String, descripcion: String, precio: Double, categoria: String) {
         viewModelScope.launch {
-            db.productoDao().insert(
+            repository.insert(
                 Producto(
                     nombre = nombre,
                     descripcion = descripcion,
@@ -154,15 +105,12 @@ class ProductoViewModel(application: Application) : AndroidViewModel(application
         }
     }
 
-    fun actualizarProducto(producto: Producto) {
-        viewModelScope.launch {
-            db.productoDao().update(producto)
-        }
-    }
-
     fun eliminarProducto(producto: Producto) {
         viewModelScope.launch {
             db.productoDao().delete(producto)
+            val listaActual = _todosLosProductos.value.toMutableList()
+            listaActual.remove(producto)
+            _todosLosProductos.value = listaActual
         }
     }
 }
