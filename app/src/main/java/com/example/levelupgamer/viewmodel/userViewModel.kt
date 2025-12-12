@@ -1,10 +1,13 @@
 package com.example.levelupgamer.viewmodel
 
 import android.app.Application
+import android.util.Log
 import androidx.lifecycle.AndroidViewModel
 import androidx.lifecycle.viewModelScope
 import com.example.levelupgamer.data.database.AppDatabase
+import com.example.levelupgamer.data.model.LoginRequest
 import com.example.levelupgamer.data.model.User
+import com.example.levelupgamer.data.network.RetrofitClient
 import com.example.levelupgamer.data.repository.UserRepository
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
@@ -17,19 +20,12 @@ class UserViewModel(application: Application) : AndroidViewModel(application) {
     private val _currentUser = MutableStateFlow<User?>(null)
     val currentUser: StateFlow<User?> = _currentUser
 
+    var authToken: String? = null
+        private set
+
     init {
         val dao = AppDatabase.getDatabase(application).userDao()
         repository = UserRepository(dao)
-    }
-
-    private fun calcularNivel(puntos: Int): Int {
-        return when {
-            puntos >= 5000 -> 5 // LEYENDA
-            puntos >= 2000 -> 4 // MAESTRO
-            puntos >= 500 -> 3  // VETERANO
-            puntos >= 100 -> 2  // INICIADO
-            else -> 1           // NOVATO
-        }
     }
 
     fun register(
@@ -50,32 +46,57 @@ class UserViewModel(application: Application) : AndroidViewModel(application) {
                     puntosLevelUp = 0,
                     nivelGamer = 1
                 )
-                repository.register(newUser)
 
-                if (!codigoReferido.isNullOrBlank()) {
+                val response = RetrofitClient.instance.registrarUsuario(newUser)
 
-                    val referidor = repository.getUserByNombre(codigoReferido)
-
-                    if (referidor != null) {
-                        val puntosPorReferido = 100 // Puntos a otorgar
-                        val nuevosPuntosReferidor = referidor.puntosLevelUp + puntosPorReferido
-                        val nuevoNivelReferidor = calcularNivel(nuevosPuntosReferidor)
-
-                        val updatedReferidor = referidor.copy(
-                            puntosLevelUp = nuevosPuntosReferidor,
-                            nivelGamer = nuevoNivelReferidor
-                        )
-                        repository.updateUser(updatedReferidor)
-                    }
+                if (response.isSuccessful) {
+                    Log.d("API_REGISTER", "Usuario registrado: ${response.body()}")
+                    onComplete(true, null)
+                } else {
+                    Log.e("API_REGISTER", "Error: ${response.code()} - ${response.errorBody()?.string()}")
+                    onComplete(false, "Error al registrar. Verifique sus datos.")
                 }
 
-                onComplete(true, null)
-
             } catch (e: Exception) {
-                onComplete(false, e.message ?: "Error desconocido al registrar usuario.")
+                Log.e("API_REGISTER", "Fallo conexión: ${e.message}")
+                onComplete(false, "Error de conexión con el servidor.")
             }
         }
     }
+
+    fun login(nombre: String, contrasena: String, onComplete: (Boolean) -> Unit) {
+        viewModelScope.launch {
+            try {
+                val request = LoginRequest(correo = nombre, contrasena = contrasena)
+
+                val response = RetrofitClient.instance.login(request)
+
+                if (response.isSuccessful && response.body() != null) {
+                    val loginResponse = response.body()!!
+
+                    authToken = "Bearer ${loginResponse.token}"
+
+                    val userLogged = User(
+                        id = loginResponse.usuarioId.toInt(),
+                        nombre = nombre,
+                        correo = nombre,
+                        contrasena = "",
+                        anioNacimiento = 0,
+                        puntosLevelUp = 0,
+                        nivelGamer = 1
+                    )
+                    _currentUser.value = userLogged
+                    onComplete(true)
+                } else {
+                    onComplete(false)
+                }
+            } catch (e: Exception) {
+                Log.e("API_LOGIN", "Error: ${e.message}")
+                onComplete(false)
+            }
+        }
+    }
+
 
     fun agregarPuntos(puntosGanados: Int, onComplete: (Boolean) -> Unit) {
         viewModelScope.launch {
@@ -99,12 +120,19 @@ class UserViewModel(application: Application) : AndroidViewModel(application) {
         }
     }
 
-    fun login(nombre: String, contrasena: String, onComplete: (Boolean) -> Unit) {
-        viewModelScope.launch {
-            val user = repository.login(nombre, contrasena)
-            _currentUser.value = user
-            onComplete(user != null)
+    private fun calcularNivel(puntos: Int): Int {
+        return when {
+            puntos >= 5000 -> 5 // LEYENDA
+            puntos >= 2000 -> 4 // MAESTRO
+            puntos >= 500 -> 3  // VETERANO
+            puntos >= 100 -> 2  // INICIADO
+            else -> 1           // NOVATO
         }
+    }
+
+    fun logout() {
+        _currentUser.value = null
+        authToken = null
     }
 
     fun updateUser(user: User, onComplete: (Boolean, String?) -> Unit) {
@@ -116,17 +144,6 @@ class UserViewModel(application: Application) : AndroidViewModel(application) {
             } catch (e: Exception) {
                 onComplete(false, e.message)
             }
-        }
-    }
-
-    fun logout() {
-        _currentUser.value = null
-    }
-
-    fun loadCurrentUser(nombre: String, contrasena: String) {
-        viewModelScope.launch {
-            val user = repository.login(nombre, contrasena)
-            _currentUser.value = user
         }
     }
 }

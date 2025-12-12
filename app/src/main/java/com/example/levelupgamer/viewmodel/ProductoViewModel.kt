@@ -7,6 +7,7 @@ import androidx.lifecycle.viewModelScope
 import androidx.room.Room
 import com.example.levelupgamer.data.database.ProductoDatabase
 import com.example.levelupgamer.data.model.Producto
+import com.example.levelupgamer.data.network.RetrofitClient // Asegúrate de tener este import
 import com.example.levelupgamer.data.repository.ProductoRepository
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
@@ -92,16 +93,36 @@ class ProductoViewModel(application: Application) : AndroidViewModel(application
         return _todosLosProductos.value.find { it.id.toLong() == id }
     }
 
-    fun agregarProducto(nombre: String, descripcion: String, precio: Double, categoria: String) {
+    fun agregarProducto(
+        token: String,
+        nombre: String,
+        descripcion: String,
+        precio: Double,
+        categoria: String,
+        imagenUrl: String
+    ) {
         viewModelScope.launch {
-            repository.insert(
-                Producto(
-                    nombre = nombre,
-                    descripcion = descripcion,
-                    precio = precio,
-                    categoria = categoria
-                )
+            val nuevoProducto = Producto(
+                nombre = nombre,
+                descripcion = descripcion,
+                precio = precio,
+                categoria = categoria,
+                imagenUrl = imagenUrl,
+                activo = true
             )
+
+            try {
+                val response = RetrofitClient.instance.crearProducto(token, nuevoProducto)
+
+                if (response.isSuccessful) {
+                    Log.d("API_ADD", "Producto creado exitosamente: ${response.body()?.nombre}")
+                    cargarProductosDesdeBackend()
+                } else {
+                    Log.e("API_ADD", "Error al crear producto: ${response.code()}")
+                }
+            } catch (e: Exception) {
+                Log.e("API_ADD", "Fallo de conexión al crear: ${e.message}")
+            }
         }
     }
 
@@ -125,5 +146,4 @@ class ProductoViewModel(application: Application) : AndroidViewModel(application
             }
         }
     }
-
 }

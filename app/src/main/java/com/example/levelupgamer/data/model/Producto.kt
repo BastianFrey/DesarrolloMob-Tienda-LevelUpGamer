@@ -15,4 +15,5 @@ data class Producto(
     val imagenRes: Int = 0,
     @SerializedName("imagenUrl")
     val imagenUrl: String? = null,
+    val activo: Boolean = true
 )

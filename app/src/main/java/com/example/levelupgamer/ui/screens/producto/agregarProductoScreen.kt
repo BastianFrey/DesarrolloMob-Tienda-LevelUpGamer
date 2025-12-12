@@ -11,6 +11,7 @@ import androidx.compose.ui.unit.dp
 import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavController
 import com.example.levelupgamer.viewmodel.ProductoViewModel
+import com.example.levelupgamer.viewmodel.UserViewModel
 
 private val categoriasParaAgregar = listOf(
     "Juegos de Mesa",
@@ -25,12 +26,17 @@ private val categoriasParaAgregar = listOf(
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun AgregarProductoScreen(navController: NavController, vm: ProductoViewModel = viewModel()) {
+fun AgregarProductoScreen(
+    navController: NavController,
+    vm: ProductoViewModel = viewModel(),
+    userViewModel: UserViewModel
+) {
     val colorScheme = MaterialTheme.colorScheme
 
     var nombre by remember { mutableStateOf("") }
     var descripcion by remember { mutableStateOf("") }
     var precio by remember { mutableStateOf("") }
+    var imagenUrl by remember { mutableStateOf("") }
     var error by remember { mutableStateOf("") }
 
     var categoriaSeleccionada by remember { mutableStateOf("") }
@@ -92,6 +98,17 @@ fun AgregarProductoScreen(navController: NavController, vm: ProductoViewModel = 
             colors = textFieldColors
         )
 
+        OutlinedTextField(
+            value = imagenUrl,
+            onValueChange = { imagenUrl = it },
+            label = { Text("URL de Imagen (Opcional)", color = colorScheme.secondary) },
+            placeholder = { Text("https://ejemplo.com/foto.jpg") },
+            modifier = Modifier
+                .fillMaxWidth()
+                .padding(top = 16.dp),
+            colors = textFieldColors
+        )
+
         // MENÚ DE CATEGORÍA
         Spacer(modifier = Modifier.height(16.dp))
         ExposedDropdownMenuBox(
@@ -146,12 +163,30 @@ fun AgregarProductoScreen(navController: NavController, vm: ProductoViewModel = 
         Button(
             onClick = {
                 val precioDouble = precio.toDoubleOrNull()
-                if (nombre.isBlank() || descripcion.isBlank() || precioDouble == null || categoriaSeleccionada.isBlank()) {
-                    error = "Completa todos los campos correctamente"
+
+                val token = userViewModel.authToken
+
+                if (token == null) {
+                    error = "Error de sesión: No eres administrador o la sesión expiró."
                     return@Button
                 }
 
-                vm.agregarProducto(nombre, descripcion, precioDouble, categoriaSeleccionada)
+                if (nombre.isBlank() || descripcion.isBlank() || precioDouble == null || categoriaSeleccionada.isBlank()) {
+                    error = "Completa todos los campos obligatorios"
+                    return@Button
+                }
+
+                val categoriaBackend = categoriaSeleccionada.uppercase().replace(" ", "_")
+
+                vm.agregarProducto(
+                    token = token,
+                    nombre = nombre,
+                    descripcion = descripcion,
+                    precio = precioDouble,
+                    categoria = categoriaBackend,
+                    imagenUrl = imagenUrl
+                )
+
                 navController.popBackStack()
             },
             colors = ButtonDefaults.buttonColors(
@@ -160,7 +195,7 @@ fun AgregarProductoScreen(navController: NavController, vm: ProductoViewModel = 
             ),
             modifier = Modifier.fillMaxWidth()
         ) {
-            Text("Agregar")
+            Text("Guardar Producto")
         }
     }
 }

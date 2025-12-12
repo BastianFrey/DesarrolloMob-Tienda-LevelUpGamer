@@ -1,19 +1,8 @@
 package com.example.levelupgamer.ui.screens.producto
 
-import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
-import androidx.compose.foundation.layout.Arrangement
-import androidx.compose.foundation.layout.Box
-import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.PaddingValues
-import androidx.compose.foundation.layout.Row
-import androidx.compose.foundation.layout.Spacer
-import androidx.compose.foundation.layout.fillMaxSize
-import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.foundation.layout.height
-import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.width
+import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyRow
 import androidx.compose.foundation.lazy.grid.GridCells
 import androidx.compose.foundation.lazy.grid.LazyVerticalGrid
@@ -22,42 +11,19 @@ import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Add
 import androidx.compose.material.icons.filled.Search
-import androidx.compose.material3.AlertDialog
-import androidx.compose.material3.TextButton
-import androidx.compose.material3.Button
-import androidx.compose.material3.ButtonDefaults
-import androidx.compose.material3.Card
-import androidx.compose.material3.CardDefaults
-import androidx.compose.material3.FilterChip
-import androidx.compose.material3.FilterChipDefaults
-import androidx.compose.material3.FloatingActionButton
-import androidx.compose.material3.Icon
-import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.OutlinedTextField
-import androidx.compose.material3.Scaffold
-// ⬇️ IMPORTACIONES CRÍTICAS PARA SNACKBAR
-import androidx.compose.material3.SnackbarDuration
-import androidx.compose.material3.SnackbarHost
-import androidx.compose.material3.SnackbarHostState
-import androidx.compose.runtime.rememberCoroutineScope
-// ⬆️ FIN IMPORTACIONES SNACKBAR
-import androidx.compose.material3.Text
-import androidx.compose.material3.TextFieldDefaults
-import androidx.compose.runtime.Composable
-import androidx.compose.runtime.collectAsState
-import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.remember
-import androidx.compose.runtime.setValue
+import androidx.compose.material3.*
+import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.layout.ContentScale
-import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavController
+import coil.compose.AsyncImage
+import coil.request.ImageRequest
 import com.example.levelupgamer.R
 import com.example.levelupgamer.data.model.Producto
 import com.example.levelupgamer.viewmodel.CarritoViewModel
@@ -87,7 +53,8 @@ fun ProductoListScreen(
     val colorScheme = MaterialTheme.colorScheme
 
     val currentUser by userViewModel.currentUser.collectAsState()
-    val isAdmin = currentUser?.correo?.endsWith("@admin.cl") == true
+
+    val isAdmin = currentUser?.correo?.endsWith("@admin.cl") == true || currentUser?.correo == "admin@duoc.cl"
 
     val searchText by productoViewModel.searchText.collectAsState()
     val categoriaSeleccionada by productoViewModel.selectedCategory.collectAsState()
@@ -225,7 +192,7 @@ fun ProductoListScreen(
             confirmButton = {
                 Button(
                     onClick = {
-                        productoViewModel.eliminarProducto(producto) // Llama a la lógica de eliminación
+                        productoViewModel.eliminarProducto(producto)
                         showDeleteConfirmation = false
                         productToDelete = null
                     },
@@ -264,7 +231,7 @@ fun ProductoCard(
         shape = RoundedCornerShape(12.dp),
         modifier = Modifier
             .fillMaxWidth()
-            .height(240.dp)
+            .height(260.dp)
             .clickable { navController.navigate("productoDetalle/${producto.id}") },
         colors = CardDefaults.cardColors(
             containerColor = colorScheme.surface
@@ -273,8 +240,14 @@ fun ProductoCard(
         Column(
             modifier = Modifier.fillMaxSize()
         ) {
-            Image(
-                painter = painterResource(id = productoImage(producto.nombre)),
+
+            AsyncImage(
+                model = ImageRequest.Builder(LocalContext.current)
+                    .data(producto.imagenUrl)
+                    .crossfade(true)
+                    .error(productoImage(producto.nombre))
+                    .placeholder(R.drawable.logo)
+                    .build(),
                 contentDescription = producto.nombre,
                 modifier = Modifier
                     .fillMaxWidth()
@@ -296,7 +269,8 @@ fun ProductoCard(
                         color = colorScheme.secondary,
                         fontWeight = FontWeight.Bold,
                         fontSize = 14.sp,
-                        maxLines = 2
+                        maxLines = 2,
+                        lineHeight = 16.sp
                     )
                     Text(
                         text = "$${producto.precio}",
@@ -308,24 +282,26 @@ fun ProductoCard(
                 if (isAdmin) {
                     Row(
                         modifier = Modifier.fillMaxWidth(),
-                        horizontalArrangement = Arrangement.SpaceBetween
+                        horizontalArrangement = Arrangement.spacedBy(4.dp)
                     ) {
                         Button(
                             onClick = onEdit,
                             colors = ButtonDefaults.buttonColors(
                                 containerColor = colorScheme.primary
                             ),
-                            modifier = Modifier.weight(1f)
+                            modifier = Modifier.weight(1f),
+                            contentPadding = PaddingValues(0.dp)
                         ) {
                             Text("Editar", color = colorScheme.onPrimary, fontSize = 12.sp)
                         }
-                        Spacer(modifier = Modifier.width(6.dp))
+
                         Button(
                             onClick = onDelete,
                             colors = ButtonDefaults.buttonColors(
                                 containerColor = colorScheme.error
                             ),
-                            modifier = Modifier.weight(1f)
+                            modifier = Modifier.weight(1f),
+                            contentPadding = PaddingValues(0.dp)
                         ) {
                             Text("Eliminar", color = colorScheme.onError, fontSize = 12.sp)
                         }
