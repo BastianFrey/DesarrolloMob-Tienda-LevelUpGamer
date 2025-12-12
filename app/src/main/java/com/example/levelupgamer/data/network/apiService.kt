@@ -27,7 +27,7 @@ interface ApiService {
     ): Response<Producto>
 
     @PUT("api/products/{id}")
-    suspend fun actualizarProducto(@Path("id") id: Int, @Body producto: Producto): Response<Producto>
+    suspend fun actualizarProducto(@Path("id") id: Long, @Body producto: Producto): Response<Producto>
 
     @POST("api/auth/register")
     suspend fun registrarUsuario(@Body usuario: User): Response<User>
