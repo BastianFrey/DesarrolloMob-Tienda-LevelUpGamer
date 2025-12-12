@@ -6,7 +6,7 @@ import com.google.gson.annotations.SerializedName
 
 @Entity(tableName = "producto")
 data class Producto(
-    @PrimaryKey(autoGenerate = true) val id: Int = 0,
+    @PrimaryKey(autoGenerate = true) val id: Long = 0,
     val codigo: String = "",
     val nombre: String = "",
     val descripcion: String = "",

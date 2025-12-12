@@ -16,6 +16,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.text.font.FontFamily
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
@@ -23,7 +24,7 @@ import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavController
 import coil.compose.AsyncImage
 import coil.request.ImageRequest
-import com.example.levelupgamer.R // Asegúrate de importar tu R para las imágenes placeholder
+import com.example.levelupgamer.R
 import com.example.levelupgamer.data.model.Resena
 import com.example.levelupgamer.viewmodel.CarritoViewModel
 import com.example.levelupgamer.viewmodel.ProductoViewModel
@@ -38,7 +39,7 @@ import java.util.Locale
 @Composable
 fun ProductoDetailScreen(
     navController: NavController,
-    productoId: Long,
+    productoId: Long, // ✅ Recibimos Long desde la navegación
     userViewModel: UserViewModel,
     carritoViewModel: CarritoViewModel = viewModel()
 ) {
@@ -51,7 +52,7 @@ fun ProductoDetailScreen(
     val currentUser by userViewModel.currentUser.collectAsState()
 
     val listaProductos by productoViewModel.productosFiltrados.collectAsState()
-    val producto = listaProductos.find { it.id.toLong().toInt() == productoId }
+    val producto = listaProductos.find { it.id == productoId }
 
     val productoIdInt = productoId.toInt()
 
@@ -94,6 +95,7 @@ fun ProductoDetailScreen(
             contentAlignment = Alignment.Center
         ) {
             if (producto == null) {
+                // Si aún no carga o no se encuentra
                 CircularProgressIndicator(color = colorScheme.primary)
             } else {
                 LazyColumn(
@@ -101,6 +103,7 @@ fun ProductoDetailScreen(
                     horizontalAlignment = Alignment.CenterHorizontally
                 ) {
                     item {
+                        // DETALLE DE PRODUCTO
                         Card(
                             modifier = Modifier
                                 .fillMaxWidth()
@@ -111,9 +114,10 @@ fun ProductoDetailScreen(
                                 modifier = Modifier.padding(24.dp),
                                 horizontalAlignment = Alignment.CenterHorizontally
                             ) {
+                                // IMAGEN DESDE URL (Con Coil)
                                 AsyncImage(
                                     model = ImageRequest.Builder(LocalContext.current)
-                                        .data(producto.imagenUrl) // URL del backend
+                                        .data(producto.imagenUrl)
                                         .crossfade(true)
                                         .error(producto.imagenRes)
                                         .placeholder(R.drawable.logo)
@@ -150,6 +154,7 @@ fun ProductoDetailScreen(
                             }
                         }
 
+                        // BOTONES DE ACCIÓN
                         Row(
                             modifier = Modifier.fillMaxWidth().padding(bottom = 16.dp),
                             horizontalArrangement = Arrangement.SpaceBetween,
@@ -200,6 +205,7 @@ fun ProductoDetailScreen(
                         }
                     }
 
+                    // RESEÑAS
                     item {
                         Text(
                             "Reseñas de la Comunidad (${resenas.size})",
@@ -305,7 +311,7 @@ fun RatingDisplay(promedio: Double, totalResenas: Int) {
 
 @Composable
 fun ReviewModal(
-    productoId: Int,
+    productoId: Long,
     userId: Int,
     userName: String,
     resenaViewModel: ResenaViewModel,
