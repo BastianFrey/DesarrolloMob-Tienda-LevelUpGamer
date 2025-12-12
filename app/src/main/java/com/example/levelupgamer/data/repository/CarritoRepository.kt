@@ -8,7 +8,7 @@ class CarritoRepository(private val carritoDao: CarritoDao) {
 
     fun getAllCarritoItems(): Flow<List<CarritoItem>> = carritoDao.getAllCarritoItems()
 
-    suspend fun getCarritoItemByProductId(productoId: Int): CarritoItem? =
+    suspend fun getCarritoItemByProductId(productoId: Long): CarritoItem? =
         carritoDao.getCarritoItemByProductId(productoId)
 
     suspend fun insert(carritoItem: CarritoItem) = carritoDao.insert(carritoItem)
