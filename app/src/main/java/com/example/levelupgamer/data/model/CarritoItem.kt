@@ -7,7 +7,7 @@ import androidx.room.PrimaryKey
 data class CarritoItem(
     @PrimaryKey(autoGenerate = true)
     val id: Int = 0,
-    val productoId: Int,
+    val productoId: Long,
     val nombre: String,
     val descripcion: String,
     val precio: Double,
