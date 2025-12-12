@@ -10,3 +10,18 @@ data class LoginResponse(
     val rol: String,
     val usuarioId: Long
 )
+
+data class RegisterRequest(
+    val nombre: String,
+    val apellidos: String,
+    val correo: String,
+    val contrasena: String,
+    val fechaNacimiento: String,
+
+    val run: String,
+    val region: String,
+    val comuna: String,
+    val direccion: String,
+
+    val codigoReferido: String? = null
+)

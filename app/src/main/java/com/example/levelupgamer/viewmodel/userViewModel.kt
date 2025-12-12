@@ -6,6 +6,7 @@ import androidx.lifecycle.AndroidViewModel
 import androidx.lifecycle.viewModelScope
 import com.example.levelupgamer.data.database.AppDatabase
 import com.example.levelupgamer.data.model.LoginRequest
+import com.example.levelupgamer.data.model.RegisterRequest // ✅ Asegúrate de tener este import
 import com.example.levelupgamer.data.model.User
 import com.example.levelupgamer.data.network.RetrofitClient
 import com.example.levelupgamer.data.repository.UserRepository
@@ -38,23 +39,31 @@ class UserViewModel(application: Application) : AndroidViewModel(application) {
     ) {
         viewModelScope.launch {
             try {
-                val newUser = User(
+                val fechaFormateada = "$anioNacimiento-01-01"
+
+                val registerRequest = RegisterRequest(
                     nombre = nombre,
+                    apellidos = ".",
                     correo = correo,
                     contrasena = contrasena,
-                    anioNacimiento = anioNacimiento,
-                    puntosLevelUp = 0,
-                    nivelGamer = 1
+                    fechaNacimiento = fechaFormateada,
+
+                    // Datos extra que pide tu DTO pero no la App (Relleno)
+                    run = "11111111-1",
+                    region = "Sin Region",
+                    comuna = "Sin Comuna",
+                    direccion = "Sin Direccion"
                 )
 
-                val response = RetrofitClient.instance.registrarUsuario(newUser)
+                val response = RetrofitClient.instance.registrarUsuario(registerRequest)
 
                 if (response.isSuccessful) {
-                    Log.d("API_REGISTER", "Usuario registrado: ${response.body()}")
+                    Log.d("API_REGISTER", "Usuario registrado exitosamente")
                     onComplete(true, null)
                 } else {
-                    Log.e("API_REGISTER", "Error: ${response.code()} - ${response.errorBody()?.string()}")
-                    onComplete(false, "Error al registrar. Verifique sus datos.")
+                    val errorMsg = response.errorBody()?.string() ?: "Error desconocido"
+                    Log.e("API_REGISTER", "Error: ${response.code()} - $errorMsg")
+                    onComplete(false, "El servidor rechazó el registro: $errorMsg")
                 }
 
             } catch (e: Exception) {

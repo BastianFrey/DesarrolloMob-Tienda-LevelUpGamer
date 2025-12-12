@@ -3,6 +3,7 @@ package com.example.levelupgamer.data.network
 import com.example.levelupgamer.data.model.LoginRequest
 import com.example.levelupgamer.data.model.LoginResponse
 import com.example.levelupgamer.data.model.Producto
+import com.example.levelupgamer.data.model.RegisterRequest
 import com.example.levelupgamer.data.model.User
 import retrofit2.Response
 import retrofit2.http.Body
@@ -30,5 +31,5 @@ interface ApiService {
     suspend fun actualizarProducto(@Path("id") id: Long, @Body producto: Producto): Response<Producto>
 
     @POST("api/auth/register")
-    suspend fun registrarUsuario(@Body usuario: User): Response<User>
+    suspend fun registrarUsuario(@Body usuario: RegisterRequest): Response<User>
 }
