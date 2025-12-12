@@ -36,7 +36,7 @@ fun EditProductoScreen(
     val colorScheme = MaterialTheme.colorScheme
 
     val listaProductos by productoViewModel.productosFiltrados.collectAsState()
-    val productoState = listaProductos.find { it.id.toLong().toInt() == productoId }
+    val productoState = listaProductos.find { it.id.toLong() == productoId }
 
     var nombre by remember { mutableStateOf("") }
     var descripcion by remember { mutableStateOf("") }
