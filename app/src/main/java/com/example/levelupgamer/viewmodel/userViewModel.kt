@@ -39,7 +39,11 @@ class UserViewModel(application: Application) : AndroidViewModel(application) {
     ) {
         viewModelScope.launch {
             try {
-                val fechaFormateada = "$anioNacimiento-01-01"
+                val fechaFormateada = String.format("%04d-01-01", anioNacimiento)
+
+                val runAleatorio = (10000000..99999999).random()
+                val digitoVerificador = (0..9).random()
+                val runFinal = "$runAleatorio$digitoVerificador"
 
                 val registerRequest = RegisterRequest(
                     nombre = nombre,
@@ -47,9 +51,7 @@ class UserViewModel(application: Application) : AndroidViewModel(application) {
                     correo = correo,
                     contrasena = contrasena,
                     fechaNacimiento = fechaFormateada,
-
-                    // Datos extra que pide tu DTO pero no la App (Relleno)
-                    run = "11111111-1",
+                    run = runFinal,
                     region = "Sin Region",
                     comuna = "Sin Comuna",
                     direccion = "Sin Direccion"
@@ -58,17 +60,22 @@ class UserViewModel(application: Application) : AndroidViewModel(application) {
                 val response = RetrofitClient.instance.registrarUsuario(registerRequest)
 
                 if (response.isSuccessful) {
-                    Log.d("API_REGISTER", "Usuario registrado exitosamente")
+                    Log.d("API_REGISTER", "Registro exitoso: ${response.code()}")
                     onComplete(true, null)
                 } else {
-                    val errorMsg = response.errorBody()?.string() ?: "Error desconocido"
-                    Log.e("API_REGISTER", "Error: ${response.code()} - $errorMsg")
-                    onComplete(false, "El servidor rechazó el registro: $errorMsg")
+                    val errorBody = response.errorBody()?.string()
+                    Log.e("API_REGISTER", "Fallo Backend: ${response.code()} - $errorBody")
+
+                    if (errorBody?.contains("correo") == true) {
+                        onComplete(false, "Ese correo ya está registrado.")
+                    } else {
+                        onComplete(false, "Error: $errorBody")
+                    }
                 }
 
             } catch (e: Exception) {
-                Log.e("API_REGISTER", "Fallo conexión: ${e.message}")
-                onComplete(false, "Error de conexión con el servidor.")
+                Log.e("API_REGISTER", "Excepción: ${e.message}")
+                onComplete(false, "Error de conexión.")
             }
         }
     }
