@@ -30,6 +30,6 @@ interface ApiService {
     @PUT("api/products/{id}")
     suspend fun actualizarProducto(@Path("id") id: Long, @Body producto: Producto): Response<Producto>
 
-    @POST("api/auth/register")
+    @POST("api/users/register")
     suspend fun registrarUsuario(@Body usuario: RegisterRequest): Response<User>
 }
