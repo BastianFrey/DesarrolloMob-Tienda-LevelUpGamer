@@ -38,7 +38,7 @@ import java.util.Locale
 @Composable
 fun ProductoDetailScreen(
     navController: NavController,
-    productoId: Int,
+    productoId: Long,
     userViewModel: UserViewModel,
     carritoViewModel: CarritoViewModel = viewModel()
 ) {

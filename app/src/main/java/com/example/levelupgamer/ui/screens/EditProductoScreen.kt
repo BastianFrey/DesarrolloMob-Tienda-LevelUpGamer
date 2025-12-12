@@ -31,7 +31,7 @@ import com.example.levelupgamer.viewmodel.ProductoViewModel
 fun EditProductoScreen(
     navController: NavController,
     productoViewModel: ProductoViewModel,
-    productoId: Int
+    productoId: Long
 ) {
     val colorScheme = MaterialTheme.colorScheme
 

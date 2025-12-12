@@ -9,6 +9,8 @@ import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.collectAsState
+import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.lifecycle.viewmodel.compose.viewModel
@@ -48,7 +50,9 @@ fun AppNavigation() {
     val productoViewModel: ProductoViewModel = viewModel()
     val eventoViewModel: EventoViewModel = viewModel()
     val noticiaViewModel: NoticiaViewModel = viewModel()
-    val cantidadCarrito = carritoViewModel.getCantidadTotal()
+
+    val productosCarrito by carritoViewModel.productosCarrito.collectAsState()
+    val cantidadCarrito = productosCarrito.sumOf { it.cantidad }
 
     NavHost(navController, startDestination = "welcome") {
         composable("welcome") { WelcomeScreen(navController) }
@@ -106,9 +110,17 @@ fun AppNavigation() {
                         }
                     }
                 }
-            ) { ProductoListScreen(navController, userViewModel, productoViewModel) }
+            ) {
+                ProductoListScreen(navController, userViewModel, productoViewModel, carritoViewModel)
+            }
         }
-        composable("agregarProducto") { MainLayout(navController = navController, title = "Agregar Producto") { AgregarProductoScreen(navController, productoViewModel) } }
+
+        composable("agregarProducto") {
+            MainLayout(navController = navController, title = "Agregar Producto") {
+                AgregarProductoScreen(navController, productoViewModel, userViewModel)
+            }
+        }
+
         composable("nosotros") { MainLayout(navController = navController, title = "Sobre Nosotros") { NosotrosScreen(navController) } }
         composable("contacto") { MainLayout(navController = navController, title = "Contacto") { ContactoScreen(navController) } }
         composable("miCuenta") { MainLayout(navController = navController, title = "Mi Cuenta") { MiCuentaScreen(navController, userViewModel) } }
@@ -117,24 +129,27 @@ fun AppNavigation() {
 
         composable(
             route = "productoDetalle/{id}",
-            arguments = listOf(navArgument("id") { type = NavType.IntType })
+            arguments = listOf(navArgument("id") { type = NavType.LongType })
         ) { backStackEntry ->
-            val id = backStackEntry.arguments?.getInt("id") ?: 0
+            val id = backStackEntry.arguments?.getLong("id") ?: 0L
             MainLayout(navController = navController, title = "Detalle del Producto") {
                 ProductoDetailScreen(
                     navController = navController,
                     productoId = id,
-                    userViewModel = userViewModel
+                    userViewModel = userViewModel,
+                    carritoViewModel = carritoViewModel
                 )
             }
         }
 
         composable(
             route = "editProducto/{productoId}",
-            arguments = listOf(navArgument("productoId") { type = NavType.IntType })
+            arguments = listOf(navArgument("productoId") { type = NavType.LongType })
         ) { backStackEntry ->
-            val productoId = backStackEntry.arguments?.getInt("productoId") ?: 0
-            MainLayout(navController = navController, title = "Editar Producto") { EditProductoScreen(navController, productoViewModel, productoId) }
+            val productoId = backStackEntry.arguments?.getLong("productoId") ?: 0L
+            MainLayout(navController = navController, title = "Editar Producto") {
+                EditProductoScreen(navController, productoViewModel, productoId)
+            }
         }
     }
 }
